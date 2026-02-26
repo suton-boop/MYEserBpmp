@@ -1,0 +1,5 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.pagination { margin-bottom: 0; }
+.page-link { line-height: 1.2; }

@@ -1,0 +1,37 @@
+
+  GET|HEAD  / ........................................................................... landing
+  GET|HEAD  admin/permissions ........ admin.permissions.index › Admin\PermissionController@index
+  GET|HEAD  admin/roles .......................... admin.roles.index › Admin\RoleController@index
+  PATCH     admin/roles/{role} ................. admin.roles.update › Admin\RoleController@update
+  GET|HEAD  admin/roles/{role}/edit ................ admin.roles.edit › Admin\RoleController@edit
+  GET|HEAD  admin/users .......................... admin.users.index › Admin\UserController@index
+  GET|HEAD  certificates ....................... certificates.index › CertificateController@index
+  POST      certificates/generate ........ certificates.generate › CertificateController@generate
+  GET|HEAD  certificates/{id}/download ... certificates.download › CertificateController@download
+  GET|HEAD  confirm-password ......... password.confirm › Auth\ConfirmablePasswordController@show
+  POST      confirm-password ........................... Auth\ConfirmablePasswordController@store
+  GET|HEAD  dashboard ..................................... dashboard › DashboardController@index
+  POST      email/verification-notification verification.send › Auth\EmailVerificationNotificati…
+  GET|HEAD  emails ......................................... emails.index › EmailController@index
+  POST      emails/send ...................................... emails.send › EmailController@send
+  GET|HEAD  forgot-password .......... password.request › Auth\PasswordResetLinkController@create
+  POST      forgot-password ............. password.email › Auth\PasswordResetLinkController@store
+  GET|HEAD  login ............................ login › Auth\AuthenticatedSessionController@create
+  POST      login ..................................... Auth\AuthenticatedSessionController@store
+  POST      logout ......................... logout › Auth\AuthenticatedSessionController@destroy
+  PUT       password ........................... password.update › Auth\PasswordController@update
+  GET|HEAD  profile ....................................... profile.edit › ProfileController@edit
+  PATCH     profile ................................... profile.update › ProfileController@update
+  DELETE    profile ................................. profile.destroy › ProfileController@destroy
+  GET|HEAD  register ............................ register › Auth\RegisteredUserController@create
+  POST      register ........................................ Auth\RegisteredUserController@store
+  GET|HEAD  reports ............................................ reports › ReportController@index
+  POST      reset-password .................... password.store › Auth\NewPasswordController@store
+  GET|HEAD  reset-password/{token} ........... password.reset › Auth\NewPasswordController@create
+  GET|HEAD  storage/{path} ........................................................ storage.local
+  GET|HEAD  up .................................................................................. 
+  GET|HEAD  verify-email ........... verification.notice › Auth\EmailVerificationPromptController
+  GET|HEAD  verify-email/{id}/{hash} ........... verification.verify › Auth\VerifyEmailController
+
+                                                                              Showing [33] routes
+
