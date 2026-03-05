@@ -183,14 +183,22 @@ class ParticipantController extends Controller
             'event_id' => 'required|exists:events,id',
             'status' => 'required|in:draft,terbit',
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
+            'email' => 'required|email|max:255',
             'nik' => 'nullable|string|max:50',
-            'institution' => 'nullable|string|max:255',
-            'daerah' => 'nullable|string|max:255',
-            'jenjang' => 'nullable|string|max:255',
+            'institution' => 'required|string|max:255',
+            'daerah' => 'required|string|max:255',
+            'jenjang' => 'required|string|max:255',
             'peran' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
+            'metadata' => 'nullable|string',
         ]);
+
+        if (!empty($validated['metadata'])) {
+            $validated['metadata'] = json_decode($validated['metadata'], true);
+        }
+        else {
+            $validated['metadata'] = null;
+        }
 
         Participant::create($validated);
 
@@ -210,14 +218,22 @@ class ParticipantController extends Controller
             'event_id' => 'required|exists:events,id',
             'status' => 'required|in:draft,terbit',
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
+            'email' => 'required|email|max:255',
             'nik' => 'nullable|string|max:50',
-            'institution' => 'nullable|string|max:255',
-            'daerah' => 'nullable|string|max:255',
-            'jenjang' => 'nullable|string|max:255',
+            'institution' => 'required|string|max:255',
+            'daerah' => 'required|string|max:255',
+            'jenjang' => 'required|string|max:255',
             'peran' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
+            'metadata' => 'nullable|string',
         ]);
+
+        if (!empty($validated['metadata'])) {
+            $validated['metadata'] = json_decode($validated['metadata'], true);
+        }
+        else {
+            $validated['metadata'] = null;
+        }
 
         $participant->update($validated);
 

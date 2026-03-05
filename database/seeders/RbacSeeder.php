@@ -13,9 +13,9 @@ class RbacSeeder extends Seeder
     public function run(): void
     {
         // 1) Roles
-        $superadmin   = Role::firstOrCreate(['name' => 'superadmin']);
+        $superadmin = Role::firstOrCreate(['name' => 'superadmin']);
         $pemilikEvent = Role::firstOrCreate(['name' => 'pemilik_event']);
-        $operator     = Role::firstOrCreate(['name' => 'operator']);
+        $operator = Role::firstOrCreate(['name' => 'operator']);
 
         // 2) Permissions (update + 5 menu baru)
         $permNames = [
@@ -57,7 +57,6 @@ class RbacSeeder extends Seeder
             $perms['report-read']->id,
 
             // ✅ tambahan baru
-            $perms['certificate-approve']->id,
             $perms['tte-manage']->id,
             $perms['monitoring-read']->id,
             $perms['audit-read']->id,
@@ -76,12 +75,12 @@ class RbacSeeder extends Seeder
 
         // 4) Buat user superadmin default
         User::firstOrCreate(
-            ['email' => 'superadmin@local.test'],
-            [
-                'name' => 'Super Admin',
-                'password' => Hash::make('password123'),
-                'role_id' => $superadmin->id,
-            ]
+        ['email' => 'superadmin@local.test'],
+        [
+            'name' => 'Super Admin',
+            'password' => Hash::make('password123'),
+            'role_id' => $superadmin->id,
+        ]
         );
     }
 }

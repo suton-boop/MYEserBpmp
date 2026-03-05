@@ -13,9 +13,11 @@
     <div class="text-muted">Kelola daftar event untuk e-sertifikat.</div>
   </div>
 
+  @if(auth()->user()->role?->name !== 'operator')
   <a href="{{ route('admin.system.events.create') }}" class="btn btn-primary rounded-3">
     <i class="fa-solid fa-plus me-1"></i> Tambah Event
   </a>
+  @endif
 </div>
 
 @if(session('success'))
@@ -80,7 +82,9 @@
           <th>Lokasi</th>
           <th width="10%" class="text-center">Peserta</th>
           <th width="10%">Status</th>
+          @if(auth()->user()->role?->name !== 'operator')
           <th width="12%">Aksi</th>
+          @endif
         </tr>
       </thead>
 
@@ -138,6 +142,7 @@
               <span class="badge {{ $badge }}">{{ $label }}</span>
             </td>
 
+            @if(auth()->user()->role?->name !== 'operator')
             <td>
               <div class="d-flex gap-2">
                 <a
@@ -161,10 +166,11 @@
                 </form>
               </div>
             </td>
+            @endif
           </tr>
         @empty
           <tr>
-            <td colspan="7" class="text-center text-muted py-4">Belum ada event.</td>
+            <td colspan="{{ auth()->user()->role?->name !== 'operator' ? 7 : 6 }}" class="text-center text-muted py-4">Belum ada event.</td>
           </tr>
         @endforelse
       </tbody>

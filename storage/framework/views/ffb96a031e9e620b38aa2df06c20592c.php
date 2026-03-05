@@ -28,12 +28,12 @@
   <div class="card-body">
     <div class="row g-3">
       <div class="col-md-8">
-        <label class="form-label">Nama Event</label>
+        <label class="form-label">Nama Event <span class="text-danger">*</span></label>
         <input name="name" class="form-control" value="<?php echo e(old('name', $event->name)); ?>" required>
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Status</label>
+        <label class="form-label">Status <span class="text-danger">*</span></label>
         <?php $st = old('status', $event->status); ?>
         <select name="status" class="form-select" required>
           <option value="draft" <?php if($st==='draft'): echo 'selected'; endif; ?>>draft</option>
@@ -43,7 +43,7 @@
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Tanggal Mulai</label>
+        <label class="form-label">Tanggal Mulai <span class="text-danger">*</span></label>
         <input type="date" name="start_date" class="form-control"
                value="<?php echo e(old('start_date', optional($event->start_date)->format('Y-m-d'))); ?>" required>
       </div>

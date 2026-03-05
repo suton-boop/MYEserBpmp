@@ -32,7 +32,7 @@
     <div class="row g-3">
 
       <div class="col-md-6">
-        <label class="form-label">Event</label>
+        <label class="form-label">Event <span class="text-danger">*</span></label>
         <select name="event_id" class="form-select" required>
           @foreach($events as $ev)
             <option value="{{ $ev->id }}" @selected(old('event_id', $participant->event_id) == $ev->id)>
@@ -43,7 +43,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Status</label>
+        <label class="form-label">Status <span class="text-danger">*</span></label>
         <select name="status" class="form-select" required>
           <option value="draft"  @selected(old('status', $participant->status)==='draft')>Draft</option>
           <option value="terbit" @selected(old('status', $participant->status)==='terbit')>Terbit</option>
@@ -51,13 +51,13 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Nama</label>
+        <label class="form-label">Nama <span class="text-danger">*</span></label>
         <input name="name" class="form-control" value="{{ old('name', $participant->name) }}" required>
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Email (opsional)</label>
-        <input name="email" type="email" class="form-control" value="{{ old('email', $participant->email) }}">
+        <label class="form-label">Email <span class="text-danger">*</span></label>
+        <input name="email" type="email" class="form-control" value="{{ old('email', $participant->email) }}" required>
       </div>
 
       <div class="col-md-6">
@@ -66,13 +66,13 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Instansi (opsional)</label>
-        <input name="institution" class="form-control" value="{{ old('institution', $participant->institution) }}">
+        <label class="form-label">Instansi <span class="text-danger">*</span></label>
+        <input name="institution" class="form-control" value="{{ old('institution', $participant->institution) }}" required>
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Kab./Kota/Propinsi (opsional)</label>
-        <select name="daerah" class="form-select">
+        <label class="form-label">Kab./Kota/Propinsi <span class="text-danger">*</span></label>
+        <select name="daerah" class="form-select" required>
           <option value="">-- Pilih Daerah --</option>
           @foreach(['Prov. Kalimantan Timur', 'Kab. Paser', 'Kab. Berau', 'Kab. Kutai Kartanegara', 'Kab. Kutai Barat', 'Kab. Kutai Timur', 'Kab. Penajam Paser Utara', 'Kab. Mahakam Ulu', 'Kota Balikpapan', 'Kota Samarinda', 'Kota Bontang'] as $d)
             <option value="{{ $d }}" @selected(old('daerah', $participant->daerah) === $d)>{{ $d }}</option>
@@ -81,8 +81,8 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Jenjang (opsional)</label>
-        <select name="jenjang" class="form-select">
+        <label class="form-label">Jenjang <span class="text-danger">*</span></label>
+        <select name="jenjang" class="form-select" required>
           <option value="">-- Pilih Jenjang --</option>
           @foreach(['PAUD-TK', 'SD', 'SMP', 'SMA', 'SMK', 'PNF', 'Umum'] as $j)
             <option value="{{ $j }}" @selected(old('jenjang', $participant->jenjang) === $j)>{{ $j }}</option>
@@ -98,6 +98,12 @@
       <div class="col-md-12">
         <label class="form-label">Keterangan (opsional)</label>
         <textarea name="keterangan" class="form-control" rows="2">{{ old('keterangan', $participant->keterangan) }}</textarea>
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label">Data Tambahan / Metadata (Format JSON, opsional)</label>
+        <textarea name="metadata" class="form-control font-monospace" rows="3" placeholder='Contoh: {"nilai_praktek": 95, "jam_pelajaran": 40}'>{{ old('metadata', $participant->metadata ? json_encode($participant->metadata, JSON_PRETTY_PRINT) : '') }}</textarea>
+        <div class="form-text">Gunakan format JSON yang valid. Biarkan kosong jika tidak ada data tambahan.</div>
       </div>
 
     </div>

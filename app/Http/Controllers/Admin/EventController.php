@@ -47,13 +47,18 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
+        // ensure certificate_template_id is null if empty
+        if (!$request->filled('certificate_template_id')) {
+            $request->merge(['certificate_template_id' => null]);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'location' => ['nullable', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'status' => ['required', 'in:draft,active,closed'],
-            'description' => ['nullable', 'string'],
+            'description' => ['required', 'string'],
 
             // pilih template
             'certificate_template_id' => ['nullable', 'integer', 'exists:certificate_templates,id'],
@@ -93,13 +98,18 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event)
     {
+        // ensure certificate_template_id is null if empty
+        if (!$request->filled('certificate_template_id')) {
+            $request->merge(['certificate_template_id' => null]);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'location' => ['nullable', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'status' => ['required', 'in:draft,active,closed'],
-            'description' => ['nullable', 'string'],
+            'description' => ['required', 'string'],
 
             'certificate_template_id' => ['nullable', 'integer', 'exists:certificate_templates,id'],
 

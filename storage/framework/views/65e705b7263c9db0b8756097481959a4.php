@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lupa Kata Sandi - E-Sertifikat</title>
-    <link rel="stylesheet" href="{{ asset('build/assets/app-VYkFtGlb.css') }}">
+    <title>Login - E-Sertifikat</title>
+    <link rel="stylesheet" href="<?php echo e(asset('build/assets/app-VYkFtGlb.css')); ?>">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         .split-bg {
@@ -49,10 +49,11 @@
         
         <div class="z-10 relative mt-auto flex flex-col items-start gap-4">
             <div class="glass-panel p-3 inline-block text-slate-800 shadow-xl">
-                <img src="{{ asset('images/ramah bermutu.png') }}" alt="Logo Pendidikan Bermutu Untuk Semua" class="h-12 lg:h-16 object-contain">
+                <!-- LOGO RAMAH BERMUTU -->
+                <img src="<?php echo e(asset('images/ramah bermutu.png')); ?>" alt="Logo Pendidikan Bermutu Untuk Semua" class="h-12 lg:h-16 object-contain">
             </div>
             <div class="text-sm font-medium text-white opacity-90 leading-snug">
-                &copy; {{ date('Y') }} Kementerian Pendidikan Dasar dan Menengah<br>
+                &copy; <?php echo e(date('Y')); ?> Kementerian Pendidikan Dasar dan Menengah<br>
                 Balai Penjaminan Mutu Pendidikan Provinsi Kalimantan Timur.
             </div>
         </div>
@@ -67,30 +68,32 @@
     <div class="w-full lg:w-7/12 flex items-center justify-center p-8 lg:p-24 relative">
         <div class="max-w-md w-full">
             <div class="mb-8 flex flex-col items-center text-center">
-                 <img src="{{ asset('images/logo-kemendikdasmen.png') }}" alt="Logo Kemendikdasmen BPMP Kaltim" class="max-w-[180px] h-auto mb-6 object-contain">
-                 <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Lupa Kata Sandi? 🔒</h2>
-                 <p class="text-slate-500 font-medium text-sm">Tidak masalah. Cukup masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi.</p>
+                 <img src="<?php echo e(asset('images/logo-kemendikdasmen.png')); ?>" alt="Logo Kemendikdasmen BPMP Kaltim" class="max-w-[180px] h-auto mb-6 object-contain">
+                 <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Selamat Datang 👋</h2>
+                 <p class="text-slate-500 font-medium">Silakan login menggunakan email dan kata sandi Anda untuk mengakses dashboard manajemen.</p>
             </div>
 
-            @if(session('status'))
+            <!-- Session Status Error Messages (Breeze Components are not used here intentionally for better custom design) -->
+            <?php if(session('status')): ?>
                 <div class="mb-5 p-4 rounded-xl bg-green-50 text-green-700 text-sm font-medium border border-green-200 flex items-center">
-                    <i class="fa-solid fa-circle-check mr-3 text-lg"></i> {{ session('status') }}
+                    <i class="fa-solid fa-circle-check mr-3 text-lg"></i> <?php echo e(session('status')); ?>
+
                 </div>
-            @endif
+            <?php endif; ?>
             
-            @if($errors->any())
+            <?php if($errors->any()): ?>
                  <div class="mb-5 p-4 rounded-xl bg-red-50 text-red-700 text-sm font-medium border border-red-200 flex items-start">
                     <i class="fa-solid fa-triangle-exclamation mr-3 mt-1 text-lg"></i>
                     <ul class="list-disc pl-2">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
-                @csrf
+            <form method="POST" action="<?php echo e(route('login')); ?>" class="space-y-6">
+                <?php echo csrf_field(); ?>
 
                 <!-- Email Address -->
                 <div>
@@ -99,26 +102,51 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none input-icon-wrapper">
                             <i class="fa-solid fa-envelope text-slate-400 group-focus-within:text-blue-600 transition-colors"></i>
                         </div>
-                        <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                        <input id="email" type="email" name="email" value="<?php echo e(old('email')); ?>" required autofocus autocomplete="username"
                             class="block w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white shadow-sm hover:border-slate-400" placeholder="contoh@kemdikbud.go.id">
                     </div>
                 </div>
 
-                <div class="pt-2 flex flex-col space-y-3">
-                    <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white transition-all hover:-translate-y-1 hover:shadow-lg" style="background: linear-gradient(135deg, #0d6efd 0%, #00b4db 100%);">
-                        Kirim Tautan Reset Sandi <i class="fa-solid fa-paper-plane ml-2 mt-0.5"></i>
-                    </button>
-                    
-                    <div class="text-center mt-4">
-                        <a href="{{ route('login') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
-                            <i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Login
-                        </a>
+                <!-- Password -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="password" class="block text-sm font-semibold text-slate-700">Kata Sandi</label>
+                        <?php if(Route::has('password.request')): ?>
+                            <a href="<?php echo e(route('password.request')); ?>" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                Lupa sandi?
+                            </a>
+                        <?php endif; ?>
                     </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none input-icon-wrapper">
+                            <i class="fa-solid fa-lock text-slate-400 group-focus-within:text-blue-600 transition-colors"></i>
+                        </div>
+                        <input id="password" type="password" name="password" required autocomplete="current-password"
+                            class="block w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white shadow-sm hover:border-slate-400" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center">
+                    <input id="remember_me" type="checkbox" name="remember" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded cursor-pointer transition-colors">
+                    <label for="remember_me" class="ml-2 block text-sm font-medium text-slate-700 cursor-pointer select-none">
+                        Ingat Saya
+                    </label>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white transition-all hover:-translate-y-1 hover:shadow-lg" style="background: linear-gradient(135deg, #0d6efd 0%, #00b4db 100%);">
+                        Masuk Dasbor <i class="fa-solid fa-arrow-right ml-2 mt-0.5"></i>
+                    </button>
                 </div>
             </form>
             
+            <div class="mt-10 text-center text-sm text-slate-500 font-medium">
+                <p>Butuh bantuan? Silakan hubungi <a href="#" class="font-bold text-blue-600 hover:underline">Tim IT BPMP Prov. Kaltim</a></p>
+            </div>
         </div>
     </div>
 </div>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\esertifikatv1\resources\views/auth/login.blade.php ENDPATH**/ ?>

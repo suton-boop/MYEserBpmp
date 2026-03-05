@@ -208,6 +208,10 @@
       $page2Content = str_replace('{{ name }}', $nameText, $page2Content);
       $page2Content = str_replace('{{ nik }}', $participant->nik ?? '-', $page2Content);
       $page2Content = str_replace('{{ institution }}', $participant->institution ?? '-', $page2Content);
+      $page2Content = str_replace('{{ daerah }}', $participant->daerah ?? '-', $page2Content);
+      $page2Content = str_replace('{{ jenjang }}', $participant->jenjang ?? '-', $page2Content);
+      $page2Content = str_replace('{{ peran }}', $participant->peran ?? '-', $page2Content);
+      $page2Content = str_replace('{{ keterangan }}', $participant->keterangan ?? '-', $page2Content);
   ?>
 
   <div class="page" style="page-break-before: always; position: relative;">

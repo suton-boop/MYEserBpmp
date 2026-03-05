@@ -13,9 +13,11 @@
     <div class="text-muted">Kelola daftar event untuk e-sertifikat.</div>
   </div>
 
+  <?php if(auth()->user()->role?->name !== 'operator'): ?>
   <a href="<?php echo e(route('admin.system.events.create')); ?>" class="btn btn-primary rounded-3">
     <i class="fa-solid fa-plus me-1"></i> Tambah Event
   </a>
+  <?php endif; ?>
 </div>
 
 <?php if(session('success')): ?>
@@ -82,7 +84,9 @@
           <th>Lokasi</th>
           <th width="10%" class="text-center">Peserta</th>
           <th width="10%">Status</th>
+          <?php if(auth()->user()->role?->name !== 'operator'): ?>
           <th width="12%">Aksi</th>
+          <?php endif; ?>
         </tr>
       </thead>
 
@@ -145,6 +149,7 @@
               <span class="badge <?php echo e($badge); ?>"><?php echo e($label); ?></span>
             </td>
 
+            <?php if(auth()->user()->role?->name !== 'operator'): ?>
             <td>
               <div class="d-flex gap-2">
                 <a
@@ -168,10 +173,11 @@
                 </form>
               </div>
             </td>
+            <?php endif; ?>
           </tr>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
           <tr>
-            <td colspan="7" class="text-center text-muted py-4">Belum ada event.</td>
+            <td colspan="<?php echo e(auth()->user()->role?->name !== 'operator' ? 7 : 6); ?>" class="text-center text-muted py-4">Belum ada event.</td>
           </tr>
         <?php endif; ?>
       </tbody>

@@ -31,7 +31,7 @@
     <div class="row g-3">
 
       <div class="col-md-8">
-        <label class="form-label fw-semibold">Nama Event</label>
+        <label class="form-label fw-semibold">Nama Event <span class="text-danger">*</span></label>
         <input type="text"
                name="name"
                class="form-control"
@@ -41,7 +41,7 @@
       </div>
 
       <div class="col-md-4">
-        <label class="form-label fw-semibold">Status</label>
+        <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
         <select name="status" class="form-select" required>
           <option value="active" @selected(old('status', 'active') === 'active')>Aktif (Active)</option>
           <option value="draft" @selected(old('status') === 'draft')>Draf (Draft)</option>
@@ -51,7 +51,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Mulai</label>
+        <label class="form-label fw-semibold">Tanggal Mulai <span class="text-danger">*</span></label>
         <input type="date"
                name="start_date"
                class="form-control"
@@ -59,20 +59,26 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label fw-semibold">Tanggal Selesai</label>
+        <label class="form-label fw-semibold">Tanggal Selesai <span class="text-danger">*</span></label>
         <input type="date"
                name="end_date"
                class="form-control"
-               value="{{ old('end_date') }}">
+               value="{{ old('end_date') }}" required>
       </div>
 
       <div class="col-12">
-        <label class="form-label fw-semibold">Lokasi (opsional)</label>
+        <label class="form-label fw-semibold">Lokasi <span class="text-danger">*</span></label>
         <input type="text"
                name="location"
                class="form-control"
                value="{{ old('location') }}"
-               placeholder="Contoh: Perpustakaan BPMP Kaltim">
+               placeholder="Contoh: Perpustakaan BPMP Kaltim" required>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Deskripsi <span class="text-danger">*</span></label>
+        <textarea name="description" class="form-control" rows="4"
+                  placeholder="Catatan event, keterangan kegiatan, dll." required>{{ old('description') }}</textarea>
       </div>
 
       <div class="col-12">
@@ -90,12 +96,6 @@
           @endif
         </select>
         <div class="form-text">Hanya template aktif yang sebaiknya dipilih.</div>
-      </div>
-
-      <div class="col-12">
-        <label class="form-label fw-semibold">Deskripsi (opsional)</label>
-        <textarea name="description" class="form-control" rows="4"
-                  placeholder="Catatan event, keterangan kegiatan, dll.">{{ old('description') }}</textarea>
       </div>
 
     </div>

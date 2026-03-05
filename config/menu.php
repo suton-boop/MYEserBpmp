@@ -50,7 +50,7 @@ return [
         'icon' => 'fa-solid fa-file-contract',
         'route' => 'admin.certificates.published',
         'active' => 'admin.certificates.published',
-        'permission' => 'certificate-generate',
+        'permission' => 'dashboard-read',
     ],
 
     [
@@ -67,6 +67,13 @@ return [
         'route' => 'admin.reports',
         'active' => 'admin.reports',
         'permission' => 'report-read',
+    ],
+
+    [
+        'title' => 'Profil Pengguna',
+        'icon' => 'fa-solid fa-user-pen',
+        'route' => 'admin.profile.edit',
+        'active' => 'admin.profile.*',
     ],
 
     [
