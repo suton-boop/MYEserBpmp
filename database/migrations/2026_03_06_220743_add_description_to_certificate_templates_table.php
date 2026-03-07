@@ -24,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('certificate_templates', function (Blueprint $table) {
-            $table->dropColumn('description');
+            if (Schema::hasColumn('certificate_templates', 'description')) {
+                $table->dropColumn('description');
+            }
         });
     }
 };
