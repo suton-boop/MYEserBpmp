@@ -11,7 +11,7 @@
         </div>
         <h1 class="display-5 fw-bold text-dark mb-3 lh-sm">Sistem Layanan <span style="color: var(--nav-blue-2);">E-Sertifikat</span> Terpadu</h1>
         <p class="lead text-muted mb-4 fs-6">
-            Akses mandiri untuk pencarian, unduhan, dan verifikasi sertifikat kegiatan di BPMP Provinsi Kalimantan Timur secara digital, instan, dan aman dengan Tanda Tangan Elektronik (TTE) tersertifikasi.
+            Akses mandiri untuk pencarian, unduhan, dan verifikasi sertifikat kegiatan di BPMP Provinsi Kalimantan Timur secara digital, instan, dan aman dengan Tanda Tangan Elektronik (TTE) terverifikasi.
         </p>
         
         <div class="d-flex flex-wrap gap-3">

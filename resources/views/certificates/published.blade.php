@@ -8,28 +8,35 @@
 
   $q       = $q ?? request('q', '');
   $eventId = $eventId ?? request('event_id', '');
+  $sortBy  = $sortBy ?? request('sort', 'latest');
 @endphp
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
   <div>
-    <h4 class="mb-0">Sertifikat Terbit</h4>
-    <div class="text-muted">Daftar sertifikat yang telah diterbitkan atau ditandatangani secara elektronik (TTE).</div>
+    <h4 class="fw-bold mb-1">Sertifikat Terbit</h4>
+    <div class="text-muted small">Daftar sertifikat yang telah diterbitkan (TTE).</div>
   </div>
 </div>
 
+<style>
+    .form-label-top { font-size: 0.75rem; font-weight: 600; color: #6c757d; display: block; margin-bottom: 4px; }
+    .filter-card { border: none !important; transition: all 0.3s ease; }
+    .filter-card:hover { transform: translateY(-2px); }
+</style>
+
 <form method="GET" action="{{ route('admin.certificates.published') }}"
-      class="card border-0 shadow-sm rounded-4 mb-3">
-  <div class="card-body">
-    <div class="row g-2 align-items-end">
-      <div class="col-lg-6">
-        <label class="form-label small text-muted mb-1">Cari</label>
-        <input type="text" name="q" class="form-control" value="{{ $q }}"
-               placeholder="Cari nama / nomor referensi / NIK...">
+      class="card filter-card border-0 shadow-sm rounded-4 mb-3">
+  <div class="card-body p-3">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <label class="form-label-top"><i class="fa-solid fa-magnifying-glass me-1"></i> Cari</label>
+        <input type="text" name="q" class="form-control rounded-3" value="{{ $q }}"
+               placeholder="Nama, nomor referensi, atau NIK...">
       </div>
 
-      <div class="col-lg-5">
-        <label class="form-label small text-muted mb-1">Event</label>
-        <select name="event_id" class="form-select">
+      <div class="col-lg-3">
+        <label class="form-label-top"><i class="fa-solid fa-calendar-event me-1"></i> Event</label>
+        <select name="event_id" class="form-select rounded-3">
           <option value="">-- Semua Event --</option>
           @foreach($events as $ev)
             <option value="{{ $ev->id }}" @selected((string)$eventId === (string)$ev->id)>
@@ -39,11 +46,21 @@
         </select>
       </div>
 
-      <div class="col-lg-1 d-flex gap-2">
-        <button class="btn btn-primary w-100" title="Cari">
-          <i class="fa-solid fa-magnifying-glass"></i>
+      <div class="col-lg-3">
+        <label class="form-label-top"><i class="fa-solid fa-sort me-1"></i> Urutan</label>
+        <select name="sort" class="form-select rounded-3">
+          <option value="latest" @selected($sortBy === 'latest')>Terbaru</option>
+          <option value="name_asc" @selected($sortBy === 'name_asc')>Nama A-Z</option>
+          <option value="name_desc" @selected($sortBy === 'name_desc')>Nama Z-A</option>
+          <option value="oldest" @selected($sortBy === 'oldest')>Terlama</option>
+        </select>
+      </div>
+
+      <div class="col-lg-2 d-flex align-items-end gap-2">
+        <button class="btn btn-primary h-100 flex-grow-1 rounded-3">
+          <i class="fa-solid fa-filter me-1"></i> Filter
         </button>
-        <a class="btn btn-outline-secondary" href="{{ route('admin.certificates.published') }}" title="Reset">
+        <a class="btn btn-outline-secondary h-100 px-3 rounded-3 d-flex align-items-center" href="{{ route('admin.certificates.published') }}">
           <i class="fa-solid fa-rotate-left"></i>
         </a>
       </div>
@@ -58,6 +75,13 @@
     </div>
     <div class="d-flex align-items-center gap-3">
         <div class="text-muted small">Total: {{ $certificates?->total() ?? 0 }}</div>
+        
+        @if(!empty($eventId) && in_array(auth()->user()->role?->name, ['admin', 'superadmin']))
+            <a href="{{ route('admin.system.events.downloadSigned', $eventId) }}" class="btn btn-sm btn-primary fw-medium">
+                <i class="fa-solid fa-file-pdf me-1"></i> Download Semua PDF TTE
+            </a>
+        @endif
+
         <a href="{{ route('admin.certificates.published.export', request()->query()) }}" class="btn btn-sm btn-success text-white fw-medium">
             <i class="fa-solid fa-file-excel me-1"></i> Eksport ke Excel
         </a>

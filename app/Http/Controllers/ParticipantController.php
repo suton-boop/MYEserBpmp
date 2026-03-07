@@ -25,6 +25,8 @@ class ParticipantController extends Controller
         $perPage = (int)$request->query('per_page', 10);
         $perPage = in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 10;
 
+        $sortBy = $request->query('sort', 'latest');
+
         $events = Event::orderBy('name')->get(['id', 'name']);
 
         // Subquery: ambil 1 sertifikat terakhir per peserta
@@ -78,11 +80,14 @@ class ParticipantController extends Controller
                         $qq->where('lc.cert_status', $status);
                     }
                 })
-            ->orderByDesc('participants.id')
+            ->when($sortBy === 'name_asc', fn($qq) => $qq->orderBy('participants.name', 'asc'))
+            ->when($sortBy === 'name_desc', fn($qq) => $qq->orderBy('participants.name', 'desc'))
+            ->when($sortBy === 'oldest', fn($qq) => $qq->orderBy('participants.id', 'asc'))
+            ->when($sortBy === 'latest' || !$sortBy, fn($qq) => $qq->orderByDesc('participants.id'))
             ->paginate($perPage)
             ->withQueryString();
         return view('participants.index', compact(
-            'participants', 'events', 'q', 'eventId', 'status', 'perPage'
+            'participants', 'events', 'q', 'eventId', 'status', 'perPage', 'sortBy'
         ));
 
 
@@ -143,7 +148,7 @@ class ParticipantController extends Controller
             foreach ($extraHeaders as $index => $colName) {
                 // $index adalah 0..n dari array_slice, jadi offset di row adalah $index + 5
                 $val = trim($row[$index + 5] ?? '');
-                $cleanColName = trim($colName ?? '');
+                $cleanColName = strtolower(trim($colName ?? ''));
                 if ($cleanColName !== '') {
                     $metadata[$cleanColName] = $val;
                 }
@@ -151,6 +156,7 @@ class ParticipantController extends Controller
 
             Participant::create([
                 'event_id' => $request->event_id,
+                'custom_date' => $metadata['tanggal_kunjungan'] ?? $metadata['custom_date'] ?? null,
                 'name' => $name,
                 'email' => $email ?: null,
                 'nik' => $nik ?: null,
@@ -191,6 +197,7 @@ class ParticipantController extends Controller
             'peran' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
             'metadata' => 'nullable|string',
+            'custom_date' => 'nullable|date',
         ]);
 
         if (!empty($validated['metadata'])) {
@@ -226,6 +233,7 @@ class ParticipantController extends Controller
             'peran' => 'nullable|string|max:255',
             'keterangan' => 'nullable|string',
             'metadata' => 'nullable|string',
+            'custom_date' => 'nullable|date',
         ]);
 
         if (!empty($validated['metadata'])) {

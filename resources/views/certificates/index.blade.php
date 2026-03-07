@@ -10,43 +10,59 @@
   $eventId = $eventId ?? request('event_id', '');
   $status  = $status ?? request('status', '');
   $certMap = $certMap ?? collect();
+  $sortBy  = $sortBy ?? request('sort', 'latest');
 @endphp
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
   <div>
-    <h4 class="mb-0">Generate Sertifikat</h4>
-    <div class="text-muted">Buat draft sertifikat berdasarkan event & peserta.</div>
+    <h4 class="fw-bold mb-1">Generate Sertifikat</h4>
+    <div class="text-muted small">Kelola penerbitan sertifikat digital secara masal.</div>
   </div>
 
-  <div class="d-flex gap-2">
-    {{-- Generate semua Draft --}}
-    <form method="POST" action="{{ route('admin.certificates.generateAll') }}">
-      @csrf
-      <input type="hidden" name="event_id" value="{{ $eventId }}">
-      <button class="btn btn-primary rounded-3" {{ $eventId ? '' : 'disabled' }}>
-        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Generate Semua (Draft)
-      </button>
-    </form>
+  <div class="d-flex flex-wrap gap-2">
+    {{-- Action Group --}}
+    <div class="bg-white p-1 rounded-4 shadow-sm border d-flex gap-1">
+        <form method="POST" action="{{ route('admin.certificates.generateAll') }}">
+          @csrf
+          <input type="hidden" name="event_id" value="{{ $eventId }}">
+          <button class="btn btn-primary rounded-3 btn-sm px-3 py-2" {{ $eventId ? '' : 'disabled' }}>
+            <i class="fa-solid fa-wand-magic-sparkles me-1 small"></i> Draft Semua
+          </button>
+        </form>
 
-    {{-- Ajukan semua Draft --}}
-    <form method="POST" action="{{ route('admin.certificates.submitAll') }}">
-      @csrf
-      <input type="hidden" name="event_id" value="{{ $eventId }}">
-      <button class="btn btn-outline-primary rounded-3" {{ $eventId ? '' : 'disabled' }}>
-        <i class="fa-solid fa-paper-plane me-1"></i> Ajukan Semua Draft
-      </button>
-    </form>
+        <form method="POST" action="{{ route('admin.certificates.submitAll') }}">
+          @csrf
+          <input type="hidden" name="event_id" value="{{ $eventId }}">
+          <button class="btn btn-outline-primary rounded-3 btn-sm px-3 py-2" {{ $eventId ? '' : 'disabled' }}>
+            <i class="fa-solid fa-paper-plane me-1 small"></i> Ajukan Semua
+          </button>
+        </form>
 
-    {{-- Generate PDF Semua --}}
-    <form method="POST" action="{{ route('admin.certificates.generatePdfAll') }}">
-      @csrf
-      <input type="hidden" name="event_id" value="{{ $eventId }}">
-      <button class="btn border-success text-success bg-success bg-opacity-10 rounded-3 shadow-sm hover:!bg-success hover:!text-white transition-colors" {{ $eventId ? '' : 'disabled' }}>
-        <i class="fa-solid fa-file-pdf me-1"></i> Generate PDF Semua Berstatus (Approved)
-      </button>
-    </form>
+        <form method="POST" action="{{ route('admin.certificates.generatePdfAll') }}">
+          @csrf
+          <input type="hidden" name="event_id" value="{{ $eventId }}">
+          <button class="btn btn-soft-success rounded-3 btn-sm px-3 py-2" {{ $eventId ? '' : 'disabled' }}>
+            <i class="fa-solid fa-file-pdf me-1 small"></i> Generate PDF (Approved)
+          </button>
+        </form>
+    </div>
   </div>
 </div>
+
+<style>
+    .btn-soft-success {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+        border: 1px solid rgba(25, 135, 84, 0.2);
+    }
+    .btn-soft-success:hover {
+        background-color: #198754;
+        color: #fff;
+    }
+    .form-label-top { font-size: 0.75rem; font-weight: 600; color: #6c757d; display: block; margin-bottom: 4px; }
+    .filter-card { border: none !important; transition: all 0.3s ease; }
+    .filter-card:hover { transform: translateY(-2px); }
+</style>
 
 @if(session('success'))
   <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -63,18 +79,18 @@
 @endif
 
 <form method="GET" action="{{ route('admin.certificates.index') }}"
-      class="card border-0 shadow-sm rounded-4 mb-3">
-  <div class="card-body">
-    <div class="row g-2 align-items-end">
-      <div class="col-lg-5">
-        <label class="form-label small text-muted mb-1">Cari</label>
-        <input type="text" name="q" class="form-control" value="{{ $q }}"
-               placeholder="Cari nama / email / NIK / instansi...">
+      class="card filter-card shadow-sm rounded-4 mb-3 border-0">
+  <div class="card-body p-3">
+    <div class="row g-3">
+      <div class="col-lg-3">
+        <label class="form-label-top"><i class="fa-solid fa-magnifying-glass me-1"></i> Cari</label>
+        <input type="text" name="q" class="form-control rounded-3" value="{{ $q }}"
+               placeholder="Nama, email, atau NIK...">
       </div>
 
-      <div class="col-lg-4">
-        <label class="form-label small text-muted mb-1">Event</label>
-        <select name="event_id" class="form-select">
+      <div class="col-lg-3">
+        <label class="form-label-top"><i class="fa-solid fa-calendar-event me-1"></i> Event</label>
+        <select name="event_id" class="form-select rounded-3">
           <option value="">-- Pilih Event --</option>
           @foreach($events as $ev)
             <option value="{{ $ev->id }}" @selected((string)$eventId === (string)$ev->id)>
@@ -85,8 +101,8 @@
       </div>
 
       <div class="col-lg-2">
-        <label class="form-label small text-muted mb-1">Status Sertifikat</label>
-        <select name="status" class="form-select">
+        <label class="form-label-top"><i class="fa-solid fa-tag me-1"></i> Status</label>
+        <select name="status" class="form-select rounded-3">
           <option value="">-- Semua --</option>
           <option value="draft" @selected($status === 'draft')>Draft</option>
           <option value="submitted" @selected($status === 'submitted')>Submitted</option>
@@ -97,11 +113,21 @@
         </select>
       </div>
 
-      <div class="col-lg-1 d-flex gap-2">
-        <button class="btn btn-primary w-100" title="Cari">
-          <i class="fa-solid fa-magnifying-glass"></i>
+      <div class="col-lg-2">
+        <label class="form-label-top"><i class="fa-solid fa-sort me-1"></i> Urutan</label>
+        <select name="sort" class="form-select rounded-3">
+          <option value="latest" @selected($sortBy === 'latest')>Terbaru</option>
+          <option value="name_asc" @selected($sortBy === 'name_asc')>Nama A-Z</option>
+          <option value="name_desc" @selected($sortBy === 'name_desc')>Nama Z-A</option>
+          <option value="oldest" @selected($sortBy === 'oldest')>Terlama</option>
+        </select>
+      </div>
+
+      <div class="col-lg-2 d-flex align-items-end gap-2">
+        <button class="btn btn-primary h-100 flex-grow-1 rounded-3">
+          <i class="fa-solid fa-filter me-1"></i> Filter
         </button>
-        <a class="btn btn-outline-secondary" href="{{ route('admin.certificates.index') }}" title="Reset">
+        <a class="btn btn-outline-secondary h-100 px-3 rounded-3 d-flex align-items-center" href="{{ route('admin.certificates.index') }}">
           <i class="fa-solid fa-rotate-left"></i>
         </a>
       </div>
@@ -253,6 +279,16 @@
                   <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="PDF belum ada">
                     <i class="fa-solid fa-download"></i>
                   </button>
+                @endif
+                
+                {{-- 6) Reset/Revise: hanya saat final_generated atau signed + Cek Role --}}
+                @if($hasCert && in_array($statusVal, [\App\Models\Certificate::STATUS_FINAL_GENERATED, \App\Models\Certificate::STATUS_SIGNED]) && in_array(auth()->user()->role?->name, ['admin', 'superadmin']))
+                  <form method="POST" action="{{ route('admin.certificates.revise', $cert->id) }}" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin melakukan revisi? Sertifikat akan di-reset ke status Approved dan file PDF lama akan dihapus. Nomor sertifikat TETAP.')">
+                    @csrf
+                    <button class="btn btn-danger btn-sm rounded-3" title="Reset / Revisi (Nomor Tetap)">
+                      <i class="fa-solid fa-rotate"></i>
+                    </button>
+                  </form>
                 @endif
 
               </div>

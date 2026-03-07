@@ -19,6 +19,7 @@ class CertificateController extends Controller
         $eventId = $request->query('event_id');
         $q = trim((string)$request->query('q', ''));
         $status = trim((string)$request->query('status', ''));
+        $sortBy = $request->query('sort', 'latest');
 
         $events = Event::orderBy('name')->get();
 
@@ -34,7 +35,10 @@ class CertificateController extends Controller
                 }
                 );
             })
-            ->latest()
+            ->when($sortBy === 'name_asc', fn($qq) => $qq->orderBy('name', 'asc'))
+            ->when($sortBy === 'name_desc', fn($qq) => $qq->orderBy('name', 'desc'))
+            ->when($sortBy === 'oldest', fn($qq) => $qq->orderBy('id', 'asc'))
+            ->when($sortBy === 'latest' || !$sortBy, fn($qq) => $qq->latest())
             ->paginate(10)
             ->withQueryString();
 
@@ -48,13 +52,15 @@ class CertificateController extends Controller
                 ->keyBy(fn($c) => $c->event_id . ':' . $c->participant_id);
         }
 
-        return view('certificates.index', compact('events', 'eventId', 'q', 'status', 'participants', 'certMap'));
+        return view('certificates.index', compact('events', 'eventId', 'q', 'status', 'participants', 'certMap', 'sortBy'));
     }
 
     public function published(Request $request)
     {
         $eventId = $request->query('event_id');
         $q = trim((string)$request->query('q', ''));
+        $status = $request->query('status');
+        $sortBy = $request->query('sort', 'latest');
 
         $events = Event::orderBy('name')->get();
 
@@ -71,17 +77,29 @@ class CertificateController extends Controller
                 }
                 )->orWhere('certificate_number', 'like', "%{$q}%");
             })
-            ->latest()
+            ->when($sortBy === 'name_asc', function ($qq) {
+            $qq->select('certificates.*')
+                ->join('participants', 'certificates.participant_id', '=', 'participants.id')
+                ->orderBy('participants.name', 'asc');
+        })
+            ->when($sortBy === 'name_desc', function ($qq) {
+            $qq->select('certificates.*')
+                ->join('participants', 'certificates.participant_id', '=', 'participants.id')
+                ->orderBy('participants.name', 'desc');
+        })
+            ->when($sortBy === 'oldest', fn($qq) => $qq->orderBy('id', 'asc'))
+            ->when($sortBy === 'latest' || !$sortBy, fn($qq) => $qq->latest())
             ->paginate(10)
             ->withQueryString();
 
-        return view('certificates.published', compact('events', 'eventId', 'q', 'certificates'));
+        return view('certificates.published', compact('events', 'eventId', 'q', 'certificates', 'sortBy'));
     }
 
     public function exportPublished(Request $request)
     {
         $eventId = $request->query('event_id');
         $q = trim((string)$request->query('q', ''));
+        $sortBy = $request->query('sort', 'latest');
 
         $query = Certificate::query()
             ->with(['event', 'participant'])
@@ -96,7 +114,18 @@ class CertificateController extends Controller
                 }
                 )->orWhere('certificate_number', 'like', "%{$q}%");
             })
-            ->latest();
+            ->when($sortBy === 'name_asc', function ($qq) {
+            $qq->select('certificates.*')
+                ->join('participants', 'certificates.participant_id', '=', 'participants.id')
+                ->orderBy('participants.name', 'asc');
+        })
+            ->when($sortBy === 'name_desc', function ($qq) {
+            $qq->select('certificates.*')
+                ->join('participants', 'certificates.participant_id', '=', 'participants.id')
+                ->orderBy('participants.name', 'desc');
+        })
+            ->when($sortBy === 'oldest', fn($qq) => $qq->orderBy('id', 'asc'))
+            ->when($sortBy === 'latest' || !$sortBy, fn($qq) => $qq->latest());
 
         $certificates = $query->get();
 

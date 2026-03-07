@@ -24,6 +24,21 @@ class MonitoringController extends Controller
             ->whereNotNull('signed_pdf_path')
             ->count();
 
+        // Antrian TTE (Sudah ada PDF, tapi belum di TTE)
+        $pendingTte = DB::table('certificates')
+            ->whereNotNull('pdf_path')
+            ->whereNull('signed_pdf_path')
+            ->count();
+
+        // Info nomor surat terakhir yang sudah digunakan
+        $lastCertificate = DB::table('certificates')
+            ->whereNotNull('certificate_number')
+            ->orderBy('year', 'desc')
+            ->orderBy('sequence', 'desc')
+            ->first(['certificate_number']);
+
+        $lastNumber = $lastCertificate ? $lastCertificate->certificate_number : '-';
+
         // Ambil data queue/jobs terbaru
         $recentJobs = DB::table('jobs')
             ->orderBy('id', 'asc')
@@ -51,7 +66,9 @@ class MonitoringController extends Controller
             'totalCertificatesGenerations',
             'totalTteSigned',
             'recentJobs',
-            'recentFailedJobs'
+            'recentFailedJobs',
+            'lastNumber',
+            'pendingTte'
         ));
     }
 

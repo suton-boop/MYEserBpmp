@@ -145,6 +145,16 @@
             @if(auth()->user()->role?->name !== 'operator')
             <td>
               <div class="d-flex gap-2">
+                @if(in_array(auth()->user()->role?->name, ['admin', 'superadmin']))
+                <a
+                  href="{{ route('admin.system.events.downloadSigned', $e->id) }}"
+                  class="btn btn-success btn-sm rounded-3"
+                  title="Download Sertifikat TTE"
+                >
+                  <i class="fa-solid fa-file-pdf"></i>
+                </a>
+                @endif
+
                 <a
                   href="{{ route('admin.system.events.edit', $e->id) }}"
                   class="btn btn-warning btn-sm rounded-3"

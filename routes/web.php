@@ -100,6 +100,8 @@ Route::prefix('admin')
                 ->whereNumber('certificate')->name('view');
             Route::get('/{certificate}/download', [CertificateController::class , 'download'])
                 ->whereNumber('certificate')->name('download');
+            Route::post('/{certificate}/revise', [CertificateFlowController::class , 'revise'])
+                ->whereNumber('certificate')->name('revise');
         }
         );
 
@@ -150,6 +152,7 @@ Route::prefix('admin')
 
                 Route::get('/permissions', [AdminPermissionController::class , 'index'])->name('permissions.index');
 
+                Route::get('/events/{event}/download-signed', [AdminEventController::class , 'downloadSigned'])->name('events.downloadSigned');
                 Route::resource('events', AdminEventController::class)->except(['show']);
 
                 Route::prefix('approvals')->name('approvals.')->group(function () {

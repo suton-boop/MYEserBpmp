@@ -152,6 +152,16 @@
             <?php if(auth()->user()->role?->name !== 'operator'): ?>
             <td>
               <div class="d-flex gap-2">
+                <?php if(in_array(auth()->user()->role?->name, ['admin', 'superadmin'])): ?>
+                <a
+                  href="<?php echo e(route('admin.system.events.downloadSigned', $e->id)); ?>"
+                  class="btn btn-success btn-sm rounded-3"
+                  title="Download Sertifikat TTE"
+                >
+                  <i class="fa-solid fa-file-pdf"></i>
+                </a>
+                <?php endif; ?>
+
                 <a
                   href="<?php echo e(route('admin.system.events.edit', $e->id)); ?>"
                   class="btn btn-warning btn-sm rounded-3"

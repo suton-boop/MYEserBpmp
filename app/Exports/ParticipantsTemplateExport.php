@@ -18,15 +18,16 @@ class ParticipantsTemplateExport implements FromArray, WithHeadings
             'daerah',
             'jenjang',
             'peran',
-            'keterangan'
+            'keterangan',
+            'tanggal_kunjungan'
         ];
     }
 
     public function array(): array
     {
         return [
-            ['Budi Santoso', 'budi@email.com', '6401xxxxxxxxxxxx', 'SMPN 1 Samarinda', 'draft', 'Samarinda', 'SMP', 'Peserta', '-'],
-            ['Siti Aminah', 'siti@email.com', '6401xxxxxxxxxxxx', 'BPMP Kaltim', 'terbit', 'Balikpapan', 'SMA', 'Panitia', '-']
+            ['Budi Santoso', 'budi@email.com', '6401xxxxxxxxxxxx', 'SMPN 1 Samarinda', 'draft', 'Samarinda', 'SMP', 'Peserta', '-', '2026-03-08'],
+            ['Siti Aminah', 'siti@email.com', '6401xxxxxxxxxxxx', 'BPMP Kaltim', 'terbit', 'Balikpapan', 'SMA', 'Panitia', '-', '2026-03-09']
         ];
     }
 }

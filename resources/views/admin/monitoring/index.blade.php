@@ -29,15 +29,15 @@
 
 {{-- WIDGETS STATISTIK ANTRIAN --}}
 <div class="row g-3 mb-4">
-  <div class="col-md-3">
+  <div class="col-lg-2 col-md-4">
     <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-      <div class="card-body">
+      <div class="card-body px-2">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <div class="text-muted small fw-semibold text-uppercase mb-1 border-bottom pb-1">Queue Menunggu</div>
-            <h2 class="mb-0 fw-bold {{ $pendingJobs > 0 ? 'text-warning' : 'text-dark' }}">{{ number_format($pendingJobs) }}</h2>
+            <div class="text-muted small fw-bold text-uppercase mb-1 border-bottom pb-1">Queue Tunggu</div>
+            <h3 class="mb-0 fw-bold {{ $pendingJobs > 0 ? 'text-warning' : 'text-dark' }}">{{ number_format($pendingJobs) }}</h3>
           </div>
-          <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; font-size: 24px;">
+          <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 18px;">
             <i class="fa-solid fa-hourglass-half fa-spin-pulse"></i>
           </div>
         </div>
@@ -45,15 +45,15 @@
     </div>
   </div>
   
-  <div class="col-md-3">
+  <div class="col-lg-2 col-md-4">
     <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-      <div class="card-body">
+      <div class="card-body px-2">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <div class="text-muted small fw-semibold text-uppercase mb-1 border-bottom pb-1">Queue Gagal</div>
-            <h2 class="mb-0 fw-bold {{ $failedJobs > 0 ? 'text-danger' : 'text-dark' }}">{{ number_format($failedJobs) }}</h2>
+            <div class="text-muted small fw-bold text-uppercase mb-1 border-bottom pb-1">Queue Gagal</div>
+            <h3 class="mb-0 fw-bold {{ $failedJobs > 0 ? 'text-danger' : 'text-dark' }}">{{ number_format($failedJobs) }}</h3>
           </div>
-          <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; font-size: 24px;">
+          <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 18px;">
             <i class="fa-solid fa-triangle-exclamation"></i>
           </div>
         </div>
@@ -61,15 +61,15 @@
     </div>
   </div>
 
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-      <div class="card-body">
+  <div class="col-lg-2 col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white border-bottom border-4 border-success">
+      <div class="card-body px-2">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <div class="text-muted small fw-semibold text-uppercase mb-1 border-bottom pb-1">PDF Tercetak</div>
-            <h2 class="mb-0 fw-bold text-success">{{ number_format($totalCertificatesGenerations) }}</h2>
+            <div class="text-muted small fw-bold text-uppercase mb-1 border-bottom pb-1">PDF Cetak</div>
+            <h3 class="mb-0 fw-bold text-success">{{ number_format($totalCertificatesGenerations) }}</h3>
           </div>
-          <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; font-size: 24px;">
+          <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 18px;">
             <i class="fa-regular fa-file-pdf"></i>
           </div>
         </div>
@@ -77,16 +77,48 @@
     </div>
   </div>
 
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-      <div class="card-body">
+  <div class="col-lg-2 col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white border-bottom border-4 border-warning">
+      <div class="card-body px-2">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <div class="text-muted small fw-semibold text-uppercase mb-1 border-bottom pb-1">Total TTE Masuk</div>
-            <h2 class="mb-0 fw-bold text-primary">{{ number_format($totalTteSigned) }}</h2>
+            <div class="text-muted small fw-bold text-uppercase mb-1 border-bottom pb-1">Antrian TTE</div>
+            <h3 class="mb-0 fw-bold text-warning">{{ number_format($pendingTte) }}</h3>
           </div>
-          <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; font-size: 24px;">
+          <div class="rounded-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 18px;">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-2 col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white border-bottom border-4 border-primary">
+      <div class="card-body px-2">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-bold text-uppercase mb-1 border-bottom pb-1">TTE SIgned</div>
+            <h3 class="mb-0 fw-bold text-primary">{{ number_format($totalTteSigned) }}</h3>
+          </div>
+          <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 18px;">
             <i class="fa-solid fa-signature"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-2 col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 h-100 bg-white border-bottom border-4 border-info">
+      <div class="card-body px-2">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <div class="text-muted small fw-bold text-uppercase mb-1 border-bottom pb-1">No. Terakhir</div>
+            <div class="fw-bold text-info text-truncate small" style="max-width: 130px;" title="{{ $lastNumber }}">{{ $lastNumber }}</div>
+          </div>
+          <div class="rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 18px;">
+            <i class="fa-solid fa-list-ol"></i>
           </div>
         </div>
       </div>

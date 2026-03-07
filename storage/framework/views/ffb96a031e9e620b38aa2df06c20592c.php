@@ -49,31 +49,36 @@
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Tanggal Selesai (opsional)</label>
+        <label class="form-label">Tanggal Selesai <span class="text-danger">*</span></label>
         <input type="date" name="end_date" class="form-control"
-               value="<?php echo e(old('end_date', optional($event->end_date)->format('Y-m-d'))); ?>">
+               value="<?php echo e(old('end_date', optional($event->end_date)->format('Y-m-d'))); ?>" required>
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Lokasi (opsional)</label>
-        <input name="location" class="form-control" value="<?php echo e(old('location', $event->location)); ?>">
+        <label class="form-label">Lokasi <span class="text-danger">*</span></label>
+        <input name="location" class="form-control" value="<?php echo e(old('location', $event->location)); ?>" required>
+      </div>
+
+      <div class="col-12 mt-2">
+        <div class="form-check form-switch card p-3 border-0 bg-light shadow-none">
+          <input class="form-check-input ms-0 me-2" type="checkbox" name="is_date_per_participant" id="isDatePerParticipant" value="1" <?php if(old('is_date_per_participant', $event->is_date_per_participant)): echo 'checked'; endif; ?>>
+          <label class="form-check-label fw-bold" for="isDatePerParticipant">
+            Tanggal Kegiatan Per Peserta (Dinamis)
+          </label>
+          <div class="form-text mt-1 ms-4">
+            Jika diaktifkan, sertifikat akan menggunakan <strong>Tanggal Khusus</strong> yang diisi pada tiap peserta. Jika dinonaktifkan, semua peserta mengikuti tanggal Event di atas.
+          </div>
+        </div>
       </div>
 
       <div class="col-12">
-        <label class="form-label">Deskripsi (opsional)</label>
-        <textarea name="description" rows="4" class="form-control"><?php echo e(old('description', $event->description)); ?></textarea>
+        <label class="form-label">Deskripsi <span class="text-danger">*</span></label>
+        <textarea name="description" rows="4" class="form-control" required><?php echo e(old('description', $event->description)); ?></textarea>
       </div>
-    </div>
-  </div>
 
- 
-  <div class="mb-3">
-  
-  <div class="form-text">Template ini dipakai saat generate sertifikat untuk event ini.</div>
-</div>
-<div class="mb-3">
-  <label class="form-label">Pilih Template Sertifikat</label>
-  <select name="certificate_template_id" class="form-select <?php $__errorArgs = ['certificate_template_id'];
+      <div class="col-12">
+        <label class="form-label">Pilih Template Sertifikat (opsional)</label>
+        <select name="certificate_template_id" class="form-select <?php $__errorArgs = ['certificate_template_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -81,15 +86,16 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
-    <option value="">-- Default / Belum ditentukan --</option>
-    <?php $__currentLoopData = $templates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-      <option value="<?php echo e($t->id); ?>"
-        <?php if((string)old('certificate_template_id', $event->certificate_template_id) === (string)$t->id): echo 'selected'; endif; ?>>
-        <?php echo e($t->name); ?> <?php if(!$t->is_active): ?> (Nonaktif) <?php endif; ?>
-      </option>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-  </select>
-  <?php $__errorArgs = ['certificate_template_id'];
+          <option value="">-- Default / Belum ditentukan --</option>
+          <?php $__currentLoopData = $templates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($t->id); ?>"
+              <?php if((string)old('certificate_template_id', $event->certificate_template_id) === (string)$t->id): echo 'selected'; endif; ?>>
+              <?php echo e($t->name); ?> <?php if(!$t->is_active): ?> (Nonaktif) <?php endif; ?>
+            </option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </select>
+        <div class="form-text">Template ini dipakai saat generate sertifikat untuk event ini.</div>
+        <?php $__errorArgs = ['certificate_template_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -97,7 +103,9 @@ $message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback"><?ph
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-</div>
+      </div>
+    </div>
+  </div>
  <div class="card-footer bg-white d-flex justify-content-end gap-2">
     <button class="btn btn-primary rounded-3">
       <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan

@@ -1,98 +1,156 @@
 
 
-<?php $__env->startSection('title', 'Verifikasi Sertifikat - BPMP Kaltim'); ?>
-<?php $__env->startSection('breadcrumb', 'Verifikasi Sertifikat'); ?>
+<?php $__env->startSection('title', 'Hasil Verifikasi - BPMP Kaltim'); ?>
+<?php $__env->startSection('breadcrumb', 'Hasil Verifikasi'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="row justify-content-center">
+<div class="row justify-content-center" data-aos="fade-up">
     <div class="col-lg-10 mb-5">
         
-        <div class="card border-0 shadow-sm rounded-0 bg-white" style="border-top: 5px solid #dff0d8 !important;">
-            <div class="card-header border-bottom py-3" style="background-color: #dff0d8; color: #3c763d;">
-                <h6 class="mb-0 fw-semibold text-success ms-2" style="font-size: 15px;">e-Certificate Verification</h6>
+        <?php if($isValid && $cert): ?>
+        <!-- Success State -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
+            <div class="card-header bg-success bg-opacity-10 border-0 py-4 px-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
+                        <i class="fa-solid fa-check fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold text-success">Sertifikat Valid</h5>
+                        <p class="mb-0 text-success opacity-75 small">Terdaftar secara resmi di database BPMP Provinsi Kaltim</p>
+                    </div>
+                </div>
             </div>
             
             <div class="card-body p-4 p-md-5">
-                <?php if($isValid && $cert): ?>
-                    <div class="mb-5">
-                        <h3 class="fw-normal mb-1 d-flex align-items-center gap-2" style="color: #333;">
-                            <i class="fa-solid fa-check-square fs-2" style="color: #333;"></i> Sertifikat Anda valid
-                        </h3>
-                        <p class="fs-6 fw-bold mb-0" style="margin-left: 38px;"><?php echo e($cert->certificate_number); ?></p>
-                    </div>
-                    
-                    <div class="mb-5">
-                        <h4 class="fw-normal mb-2 text-dark d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-user fs-4 text-dark"></i> Participant Profile
-                        </h4>
-                        <div class="ms-1">
-                            <h5 class="fw-bold mb-1 fs-5"><?php echo e($cert->participant->name); ?></h5>
-                            <div class="text-secondary fs-6 mb-1"><?php echo e($cert->participant->institution ?? '-'); ?></div>
-                            <div class="text-secondary fs-6">-</div>
+                <div class="row g-5">
+                    <div class="col-md-7">
+                        <div class="mb-5">
+                            <label class="text-uppercase text-muted fw-bold small mb-2 tracking-wider" style="letter-spacing: 1px;">Nomor Sertifikat</label>
+                            <h4 class="fw-bold text-dark font-monospace"><?php echo e($cert->certificate_number); ?></h4>
                         </div>
-                    </div>
+                        
+                        <div class="row g-4 mb-5">
+                            <div class="col-12">
+                                <label class="text-uppercase text-muted fw-bold small mb-2 tracking-wider" style="letter-spacing: 1px;">Nama Peserta</label>
+                                <h3 class="fw-800 text-dark mb-1" style="font-weight: 800;"><?php echo e($cert->participant->name); ?></h3>
+                                <div class="text-primary fw-semibold"><?php echo e($cert->participant->institution ?? '-'); ?></div>
+                            </div>
+                        </div>
 
-                    <div class="mb-4">
-                        <h4 class="fw-normal mb-2 text-dark d-flex align-items-center gap-2 ms-0">
-                            <i class="fa-solid fa-book fs-4 text-dark"></i> Program
-                        </h4>
-                        <div class="ms-1">
-                            <h5 class="fw-bold mb-4 fs-6 text-dark" style="line-height: 1.5;"><?php echo e($cert->event->name); ?></h5>
+                        <div class="mb-0">
+                            <label class="text-uppercase text-muted fw-bold small mb-2 tracking-wider" style="letter-spacing: 1px;">Informasi Kegiatan</label>
+                            <h5 class="fw-bold text-dark mb-3 lh-base"><?php echo e($cert->event->name); ?></h5>
                             
-                            <div class="text-dark">
-                                <?php if($cert->event->event_type): ?>
-                                    <div><?php echo e($cert->event->event_type); ?></div>
-                                <?php else: ?>
-                                    <div class="text-muted small mb-1">Kegiatan E-Sertifikat BPMP</div>
-                                <?php endif; ?>
+                            <div class="d-flex flex-wrap gap-4 mt-3">
                                 <div>
-                                    <?php echo e($cert->event->start_date ? \Carbon\Carbon::parse($cert->event->start_date)->translatedFormat('d F Y') : '-'); ?> - 
-                                    <?php echo e($cert->event->end_date ? \Carbon\Carbon::parse($cert->event->end_date)->translatedFormat('d F Y') : '-'); ?>
+                                    <div class="text-muted small mb-1">Tanggal Kegiatan</div>
+                                    <div class="fw-semibold text-dark">
+                                        <i class="fa-regular fa-calendar-check me-1 text-primary"></i>
+                                        <?php
+                                            $displayDate = ($cert->event->is_date_per_participant)
+                                                ? ($cert->participant->custom_date ?? $cert->event->start_date)
+                                                : $cert->event->start_date;
+                                        ?>
+                                        <?php echo e($displayDate ? \Carbon\Carbon::parse($displayDate)->translatedFormat('d M Y') : '-'); ?>
 
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-muted small mb-1">Status Dokumen</div>
+                                    <div class="fw-semibold text-success">
+                                        <i class="fa-solid fa-circle-check me-1"></i> Terbit
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="d-flex align-items-center justify-content-between p-3 mt-5 shadow-sm rounded-3 w-100" style="background-color: #f7f9fa; border: 1px dashed #ced4da;">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-file-signature text-success fs-3 border-end pe-3"></i>
-                            <div class="ms-2">
-                                <h6 class="mb-0 fw-bold ext-dark">Digital TTE Valid</h6>
-                                <p class="mb-0 small text-muted">Ditandatangani oleh Kepala BPMP Provinsi Kaltim</p>
+                    
+                    <div class="col-md-5">
+                        <div class="h-100 bg-light rounded-4 p-4 d-flex flex-column justify-content-between border border-light shadow-sm">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-3">Tanda Tangan Elektronik</h6>
+                                <div class="d-flex gap-3 mb-4">
+                                    <div class="bg-white p-3 rounded-3 shadow-sm text-center" style="width: 70px; height: 70px;">
+                                        <i class="fa-solid fa-file-signature text-primary fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark small">TTE Valid & Terverifikasi</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">Sesuai dengan regulasi TTE di lingkungan Kemendikbudristek</div>
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-4">
+                                    Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh Balai Sertifikasi Elektronik (BSrE), BSSN.
+                                </p>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <a href="<?php echo e(route('public.download', $cert->verify_token)); ?>" target="_blank" class="btn btn-primary btn-lg w-100 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 py-3 shadow-sm ripple">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> UNDUH SERTIFIKAT
+                                </a>
+                                <p class="text-center mt-3 mb-0">
+                                    <a href="<?php echo e(route('public.verify.form')); ?>" class="text-decoration-none small text-muted hover-primary">
+                                        <i class="fa-solid fa-chevron-left me-1"></i> Verifikasi Nomor Lain
+                                    </a>
+                                </p>
                             </div>
                         </div>
-                        <div>
-                             <a href="<?php echo e(route('public.download', $cert->verify_token)); ?>" target="_blank" class="btn btn-success btn-sm rounded-1 shadow-sm px-3 fw-bold" style="background-color: #5cb85c; border-color: #4cae4c; font-size: 13px;">
-                                 <i class="fa-solid fa-download me-1"></i> UNDUH SERTIFIKAT
-                             </a>
-                        </div>
                     </div>
-                <?php else: ?>
-                    <div style="background-color: #f2dede; border: 1px solid #ebccd1; border-top: 15px solid #ebccd1; padding: 50px 20px; text-align: center; border-radius: 4px;">
-                        <h2 class="fw-normal mb-2 fs-3" style="color: #333;">Verifikasi tidak valid !</h2>
-                        <p class="mb-4 text-muted fs-6">Sertifikat anda tidak ada dalam database kami</p>
-
-                        <div class="my-4">
-                            <i class="fa-solid fa-xmark" style="font-size: 30px; color: #333;"></i>
-                        </div>
-
-                        <h4 class="fw-normal fs-4 text-dark" style="margin-top: 20px;">We cannot find your certification data.</h4>
-                        <h4 class="fw-normal fs-4 text-dark">Unfortunately, your certificate is not valid.</h4>
-                        
-                        <div class="mt-5">
-                            <a href="<?php echo e(route('public.verify.form')); ?>" class="btn text-white fw-bold px-4 rounded-1 shadow-sm" style="background-color: #f0ad4e; border-color: #eea236; font-size: 14px;">
-                                <i class="fa-solid fa-rotate-left me-1"></i> Kembali ke Pencarian
-                            </a>
-                        </div>
-                    </div>
-                <?php endif; ?>
+                </div>
             </div>
-
         </div>
+        <?php else: ?>
+        <!-- Error State -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4" data-aos="zoom-in">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <i class="fa-solid fa-circle-xmark" style="font-size: 3.5rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-2">Verifikasi Gagal</h2>
+                    <p class="text-muted fs-5">Maaf, data sertifikat tersebut tidak dapat ditemukan dalam database kami.</p>
+                </div>
+                
+                <div class="bg-light rounded-4 p-4 mb-5 mx-auto text-start border border-danger border-opacity-10" style="max-width: 600px;">
+                    <h6 class="fw-bold text-danger mb-2">Kemungkinan Penyebab:</h6>
+                    <ul class="text-muted small mb-0">
+                        <li class="mb-2">Nomor sertifikat yang Anda masukkan salah atau typo.</li>
+                        <li class="mb-2">Sertifikat belum diterbitkan atau masih dalam proses TTE.</li>
+                        <li class="mb-2">Data tersebut bukan merupakan sertifikat resmi yang diterbitkan oleh BPMP Kaltim.</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="<?php echo e(route('public.verify.form')); ?>" class="btn btn-primary btn-lg px-5 fw-bold rounded-3 shadow-sm">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Coba Lagi
+                    </a>
+                    <a href="<?php echo e(route('public.home')); ?>" class="btn btn-outline-dark btn-lg px-5 fw-bold rounded-3">
+                        Halaman Utama
+                    </a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
 
     </div>
 </div>
+
+<style>
+    .fw-800 { font-weight: 800; }
+    .tracking-wider { letter-spacing: 0.1em; }
+    .ripple {
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ripple:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.2) !important;
+    }
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
+    }
+</style>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('public.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\esertifikatv1\resources\views/public/verify-show.blade.php ENDPATH**/ ?>

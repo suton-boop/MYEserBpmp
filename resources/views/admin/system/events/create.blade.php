@@ -66,6 +66,18 @@
                value="{{ old('end_date') }}" required>
       </div>
 
+      <div class="col-12 mt-2">
+        <div class="form-check form-switch card p-3 border-0 bg-light shadow-none">
+          <input class="form-check-input ms-0 me-2" type="checkbox" name="is_date_per_participant" id="isDatePerParticipant" value="1" @checked(old('is_date_per_participant'))>
+          <label class="form-check-label fw-bold" for="isDatePerParticipant">
+            Tanggal Kegiatan Per Peserta (Dinamis)
+          </label>
+          <div class="form-text mt-1 ms-4">
+            Jika diaktifkan, sertifikat akan menggunakan <strong>Tanggal Khusus</strong> yang diisi pada tiap peserta. Jika dinonaktifkan, semua peserta mengikuti tanggal Event di atas.
+          </div>
+        </div>
+      </div>
+
       <div class="col-12">
         <label class="form-label fw-semibold">Lokasi <span class="text-danger">*</span></label>
         <input type="text"

@@ -60,13 +60,13 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">NIK (opsional)</label>
-        <input name="nik" class="form-control" value="{{ old('nik') }}">
+        <label class="form-label">NIK / NISN (opsional)</label>
+        <input name="nik" class="form-control" value="{{ old('nik') }}" placeholder="Contoh: 97455319">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Instansi <span class="text-danger">*</span></label>
-        <input name="institution" class="form-control" value="{{ old('institution') }}" required>
+        <label class="form-label">Sekolah / Instansi <span class="text-danger">*</span></label>
+        <input name="institution" class="form-control" value="{{ old('institution') }}" placeholder="Contoh: SMKN 11 SAMARINDA" required>
       </div>
 
       <div class="col-md-6">
@@ -90,8 +90,14 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Peran (opsional)</label>
-        <input name="peran" class="form-control" value="{{ old('peran') }}">
+        <label class="form-label">Jurusan / Kompetensi Keahlian (opsional)</label>
+        <input name="peran" class="form-control" value="{{ old('peran') }}" placeholder="Contoh: TEKNIK KOMPUTER DAN JARINGAN">
+      </div>
+      
+      <div class="col-md-6">
+        <label class="form-label">Tanggal Khusus (opsional)</label>
+        <input name="custom_date" type="date" class="form-control" value="{{ old('custom_date') }}">
+        <div class="form-text">Isi jika tanggal kegiatan berbeda dengan tanggal di Event.</div>
       </div>
 
       <div class="col-md-12">

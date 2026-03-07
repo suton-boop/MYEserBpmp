@@ -61,13 +61,13 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">NIK (opsional)</label>
-        <input name="nik" class="form-control" value="{{ old('nik', $participant->nik) }}">
+        <label class="form-label">NIK / NISN (opsional)</label>
+        <input name="nik" class="form-control" value="{{ old('nik', $participant->nik) }}" placeholder="Contoh: 97455319">
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Instansi <span class="text-danger">*</span></label>
-        <input name="institution" class="form-control" value="{{ old('institution', $participant->institution) }}" required>
+        <label class="form-label">Sekolah / Instansi <span class="text-danger">*</span></label>
+        <input name="institution" class="form-control" value="{{ old('institution', $participant->institution) }}" placeholder="Contoh: SMKN 11 SAMARINDA" required>
       </div>
 
       <div class="col-md-6">
@@ -91,8 +91,14 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Peran (opsional)</label>
-        <input name="peran" class="form-control" value="{{ old('peran', $participant->peran) }}">
+        <label class="form-label">Jurusan / Kompetensi Keahlian (opsional)</label>
+        <input name="peran" class="form-control" value="{{ old('peran', $participant->peran) }}" placeholder="Contoh: TEKNIK KOMPUTER DAN JARINGAN">
+      </div>
+      
+      <div class="col-md-6">
+        <label class="form-label">Tanggal Khusus (opsional)</label>
+        <input name="custom_date" type="date" class="form-control" value="{{ old('custom_date', $participant->custom_date ? $participant->custom_date->format('Y-m-d') : '') }}">
+        <div class="form-text">Isi jika tanggal kegiatan berbeda dengan tanggal di Event.</div>
       </div>
 
       <div class="col-md-12">

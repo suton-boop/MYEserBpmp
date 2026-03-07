@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Certificate;
 use App\Models\CertificateTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use ZipArchive;
 
 class EventController extends Controller
 {
@@ -65,6 +69,7 @@ class EventController extends Controller
 
             // ✅ appendix halaman 2 (json string dari textarea)
             'certificate_appendix' => ['nullable', 'json'],
+            'is_date_per_participant' => ['nullable', 'boolean'],
         ]);
 
         // jika template dipilih, pastikan template tersebut aktif
@@ -77,6 +82,8 @@ class EventController extends Controller
                 return back()->withInput()->with('error', 'Template yang dipilih sedang nonaktif.');
             }
         }
+
+        $data['is_date_per_participant'] = $request->boolean('is_date_per_participant');
 
         Event::create($data);
 
@@ -115,6 +122,7 @@ class EventController extends Controller
 
             // ✅ appendix halaman 2
             'certificate_appendix' => ['nullable', 'json'],
+            'is_date_per_participant' => ['nullable', 'boolean'],
         ]);
 
         if (!empty($data['certificate_template_id'])) {
@@ -126,6 +134,8 @@ class EventController extends Controller
                 return back()->withInput()->with('error', 'Template yang dipilih sedang nonaktif.');
             }
         }
+
+        $data['is_date_per_participant'] = $request->boolean('is_date_per_participant');
 
         $event->update($data);
 
@@ -141,5 +151,52 @@ class EventController extends Controller
         return redirect()
             ->route('admin.system.events.index')
             ->with('success', 'Event berhasil dihapus.');
+    }
+
+    public function downloadSigned(Event $event)
+    {
+        // Ambil sertifikat yang statusnya 'signed'
+        $certificates = $event->certificates()
+            ->with('participant')
+            ->where('status', Certificate::STATUS_SIGNED)
+            ->whereNotNull('signed_pdf_path')
+            ->get();
+
+        if ($certificates->isEmpty()) {
+            return back()->with('error', 'Tidak ada sertifikat yang sudah ditanda tangani (TTE) untuk event ini.');
+        }
+
+        $zip = new ZipArchive();
+        $fileName = 'sertifikat-' . Str::slug((string)$event->name) . '-' . now()->format('YmdHis') . '.zip';
+        $zipPath = storage_path('app/public/tmp/' . $fileName);
+
+        // Pastikan direktori tmp ada
+        if (!is_dir(storage_path('app/public/tmp'))) {
+            @mkdir(storage_path('app/public/tmp'), 0777, true);
+        }
+
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            foreach ($certificates as $cert) {
+                if ($cert->signed_pdf_path && Storage::disk('public')->exists($cert->signed_pdf_path)) {
+                    $pdfPath = Storage::disk('public')->path($cert->signed_pdf_path);
+
+                    // Gunakan nama file yang deskriptif di dalam zip
+                    $participantName = Str::slug((string)($cert->participant->name ?? $cert->id));
+                    $insideName = "sertifikat-{$participantName}-{$cert->id}.pdf";
+
+                    $zip->addFile($pdfPath, $insideName);
+                }
+            }
+            $zip->close();
+        }
+        else {
+            return back()->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        if (!file_exists($zipPath)) {
+            return back()->with('error', 'File ZIP tidak berhasil dibuat.');
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }

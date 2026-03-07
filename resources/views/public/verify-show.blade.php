@@ -47,7 +47,12 @@
                                     <div class="text-muted small mb-1">Tanggal Kegiatan</div>
                                     <div class="fw-semibold text-dark">
                                         <i class="fa-regular fa-calendar-check me-1 text-primary"></i>
-                                        {{ $cert->event->start_date ? \Carbon\Carbon::parse($cert->event->start_date)->translatedFormat('d M Y') : '-' }}
+                                        @php
+                                            $displayDate = ($cert->event->is_date_per_participant)
+                                                ? ($cert->participant->custom_date ?? $cert->event->start_date)
+                                                : $cert->event->start_date;
+                                        @endphp
+                                        {{ $displayDate ? \Carbon\Carbon::parse($displayDate)->translatedFormat('d M Y') : '-' }}
                                     </div>
                                 </div>
                                 <div>

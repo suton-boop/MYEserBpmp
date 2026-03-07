@@ -93,7 +93,14 @@
   $eventText  = $event?->name ?? '-';
 
   // format Indonesia (Februari, dll)
-  $dateText = optional($event?->start_date)->locale('id')->translatedFormat('d F Y'); // 11 Februari 2026
+  // PRIORITAS: 
+  // Jika Event diatur "Dinamis", ambil dari custom_date peserta (fallback ke event).
+  // Jika Event diatur "Fix", ambil dari start_date event (tutup kemungkinan beda tanggal).
+  $rawDate = ($event?->is_date_per_participant) 
+             ? ($participant?->custom_date ?? $event?->start_date) 
+             : $event?->start_date;
+
+  $dateText = $rawDate ? $rawDate->locale('id')->translatedFormat('d F Y') : "";
   $dateText = $dateText ? "Samarinda, {$dateText}" : "";
 
   // deskripsi: ambil dari event->description (Opsional A)
