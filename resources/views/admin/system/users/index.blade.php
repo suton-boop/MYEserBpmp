@@ -9,7 +9,8 @@
   </div>
 
   <div class="d-flex flex-wrap gap-2">
-    @if(auth()->user()->hasRole('superadmin'))
+    @php $roleName = strtolower(auth()->user()->role->name ?? ''); @endphp
+    @if($roleName === 'superadmin' || $roleName === 'super admin')
         <a href="{{ route('admin.system.users.import.form') }}" class="btn btn-soft-primary rounded-3 px-3">
             <i class="fa-solid fa-file-import me-1"></i> Import User
         </a>
