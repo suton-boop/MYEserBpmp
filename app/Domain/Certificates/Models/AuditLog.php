@@ -10,12 +10,17 @@ class AuditLog extends Model
     use HasUuids;
 
     protected $fillable = [
-        'event_type','subject_id','subject_type',
-        'actor_id','actor_ip','actor_user_agent',
-        'metadata','prev_hash','hash',
+        'event_type', 'subject_id', 'subject_type',
+        'actor_id', 'actor_ip', 'actor_user_agent',
+        'metadata', 'prev_hash', 'hash',
     ];
 
     protected $casts = [
         'metadata' => 'array',
     ];
+
+    public function actor()
+    {
+        return $this->belongsTo(\App\Models\User::class , 'actor_id');
+    }
 }
