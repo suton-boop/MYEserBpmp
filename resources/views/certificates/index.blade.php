@@ -136,15 +136,19 @@
 </form>
 
 <div class="card border-0 shadow-sm rounded-4">
-  <div class="card-header bg-white border-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
-    <div>
-      <div class="fw-semibold">Daftar Peserta</div>
-      <div class="text-muted small">
-        File PDF tersimpan di: <code>storage/app/public/{pdf_path}</code> dan bisa diakses:
-        <code>public/storage/{pdf_path}</code> (setelah <code>php artisan storage:link</code>)
+  <div class="card-header bg-white border-0 py-3 d-flex flex-wrap justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <div class="bg-primary rounded-circle d-inline-flex p-2 text-white">
+        <i class="fa-solid fa-users-gear small"></i>
+      </div>
+      <div>
+        <h6 class="fw-bold mb-0">Daftar Antrean & Status Sertifikat</h6>
+        <div class="text-muted small">Monitoring proses dari Draft hingga Terbit (TTE).</div>
       </div>
     </div>
-    <div class="text-muted small">Total: {{ $participants?->total() ?? 0 }}</div>
+    <div class="badge bg-light text-dark border rounded-pill px-3 py-2 fw-semibold shadow-sm">
+      Total: {{ $participants?->total() ?? 0 }} Peserta
+    </div>
   </div>
 
   <div class="table-responsive">
