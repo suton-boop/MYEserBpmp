@@ -193,7 +193,7 @@
     'number'      => ['x'=>0, 'y'=>210, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'600'],
     'name'        => ['x'=>0, 'y'=>315, 'w'=>1123, 'font'=>48, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'700'],
     'event'       => ['x'=>0, 'y'=>410, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
-    'desc'        => ['x'=>110,'y'=>460, 'w'=>900,  'font'=>18, 'color'=>'#111111', 'align'=>'center', 'weight'=>'400'],
+    'desc'        => ['x'=>95, 'y'=>460, 'w'=>933,  'font'=>16, 'color'=>'#111111', 'align'=>'justify','weight'=>'400'],
     'date'        => ['x'=>0, 'y'=>567, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'500'],
     'nik'         => ['x'=>0, 'y'=>345, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'600'],
     'peran'       => ['x'=>0, 'y'=>425, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
@@ -363,7 +363,7 @@
            left: {{ (int)$get($fDesc,'x') }}px;
            top: {{ (int)$get($fDesc,'y') }}px;
            width: {{ (int)$get($fDesc,'w') }}px;
-           font-size: {{ $get($fDesc,'font', 18) }}px;
+           font-size: {{ $get($fDesc,'font', 16) }}px;
            color: {{ $get($fDesc,'color') }};
            text-align: {{ $get($fDesc,'align') }};
            font-weight: {{ $get($fDesc,'weight') }};
