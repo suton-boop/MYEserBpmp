@@ -38,12 +38,16 @@ box-shadow:
 height:130px;
 object-fit:contain;
 margin-bottom:20px;
+display: block;
+margin-left: auto;
+margin-right: auto;
 }
 
 .title-login{
 font-size:40px;
 font-weight:800;
 color:#1e293b;
+text-align: center;
 }
 
 .subtitle-login{
@@ -51,6 +55,7 @@ color:#64748b;
 font-size:18px;
 margin-top:6px;
 margin-bottom:35px;
+text-align: center;
 }
 
 .label-login{
