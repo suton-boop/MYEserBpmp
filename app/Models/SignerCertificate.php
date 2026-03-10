@@ -16,12 +16,14 @@ class SignerCertificate extends Model
     protected $fillable = [
         'code',
         'name',
-        'fingerprint',
-        'public_key',
+        'public_key_pem',
         'private_key_encrypted',
+        'private_key_fingerprint',
         'is_active',
         'valid_from',
         'valid_to',
+        'rotated_from_id',
+        'created_by',
         'meta',
     ];
 
@@ -31,4 +33,14 @@ class SignerCertificate extends Model
         'valid_to' => 'datetime',
         'meta' => 'array',
     ];
+
+    public function rotatedFrom()
+    {
+        return $this->belongsTo(self::class , 'rotated_from_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class , 'created_by');
+    }
 }
