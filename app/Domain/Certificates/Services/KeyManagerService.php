@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Domain\Certificates\Services;
 
@@ -9,75 +9,75 @@ use Illuminate\Support\Str;
 class KeyManagerService
 {
     public function createSignerCertificate(
-        string \,
-        string \,
-        string \,
-        string \,
-        int \,
-        ?string \ = null,
-        ?string \ = null,
-        ?string \ = null
+        string $code,
+        string $name,
+        string $publicKeyPem,
+        string $privateKeyPem,
+        int $createdBy,
+        ?string $validFrom = null,
+        ?string $validTo = null,
+        ?string $rotatedFromId = null
     ): SignerCertificate {
-        \ = Crypt::encryptString(\);
+        $encrypted = Crypt::encryptString($privateKeyPem);
 
-        \ = hash('sha256', \->normalizePem(\));
+        $fingerprint = hash("sha256", $this->normalizePem($publicKeyPem));
 
         return SignerCertificate::query()->create([
-            'id' => (string) Str::uuid(),
-            'code' => \,
-            'name' => \,
-            'public_key_pem' => \,
-            'private_key_encrypted' => \,
-            'private_key_fingerprint' => \,
-            'is_active' => true,
-            'valid_from' => \,
-            'valid_to' => \,
-            'rotated_from_id' => \,
-            'created_by' => \,
+            "id" => (string) Str::uuid(),
+            "code" => $code,
+            "name" => $name,
+            "public_key_pem" => $publicKeyPem,
+            "private_key_encrypted" => $encrypted,
+            "private_key_fingerprint" => $fingerprint,
+            "is_active" => true,
+            "valid_from" => $validFrom,
+            "valid_to" => $validTo,
+            "rotated_from_id" => $rotatedFromId,
+            "created_by" => $createdBy,
         ]);
     }
 
-    public function deactivate(string \): void
+    public function deactivate(string $signerCertId): void
     {
-        SignerCertificate::query()->whereKey(\)->update(['is_active' => false]);
+        SignerCertificate::query()->whereKey($signerCertId)->update(["is_active" => false]);
     }
 
-    public function getActiveByCode(string \): SignerCertificate
+    public function getActiveByCode(string $code): SignerCertificate
     {
         return SignerCertificate::query()
-            ->where('code', \)
-            ->where('is_active', true)
+            ->where("code", $code)
+            ->where("is_active", true)
             ->firstOrFail();
     }
 
-    public function loadPrivateKeyPem(SignerCertificate \): string
+    public function loadPrivateKeyPem(SignerCertificate $cert): string
     {
-        return Crypt::decryptString(\->private_key_encrypted);
+        return Crypt::decryptString($cert->private_key_encrypted);
     }
 
     public function rotate(
-        string \,
-        string \,
-        string \,
-        string \,
-        string \,
-        int \
+        string $oldCertCode,
+        string $newCode,
+        string $newName,
+        string $newPublicPem,
+        string $newPrivatePem,
+        int $createdBy
     ): SignerCertificate {
-        \ = \->getActiveByCode(\);
-        \->deactivate(\->id);
+        $old = $this->getActiveByCode($oldCertCode);
+        $this->deactivate($old->id);
 
-        return \->createSignerCertificate(
-            \,
-            \,
-            \,
-            \,
-            \,
-            rotatedFromId: \->id
+        return $this->createSignerCertificate(
+            $newCode,
+            $newName,
+            $newPublicPem,
+            $newPrivatePem,
+            $createdBy,
+            rotatedFromId: $old->id
         );
     }
 
-    private function normalizePem(string \): string
+    private function normalizePem(string $pem): string
     {
-        return trim(str_replace(["\r\n", "\r"], "\n", \));
+        return trim(str_replace(["\r\n", "\r"], "\n", $pem));
     }
 }
