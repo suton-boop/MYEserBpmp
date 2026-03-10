@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 
 namespace App\Domain\Certificates\Services;
 
 use App\Domain\Certificates\DTO\SignResult;
-use App\Domain\Certificates\Models\Certificate;
-use App\Domain\Certificates\Models\DigitalSignature;
+use App\\Models\\Certificate;
+use App\\Models\\DigitalSignature;
 use App\Models\SignerCertificate;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\DB;
@@ -194,9 +194,9 @@ class TteService
                 // Visible text stamp
                 $pdf->SetFont('helvetica', '', 9);
                 $pdf->SetXY(10, $size['height'] - 10);
-                $pdf->Cell(0, 5, 'Signed by TTE Internal | Hash: ' . substr($hashHex, 0, 16) . '…', 0, 1);
+                $pdf->Cell(0, 5, 'Signed by TTE Internal | Hash: ' . substr($hashHex, 0, 16) . 'â€¦', 0, 1);
 
-                // SECURITY: Invisible marker via hidden text (tiny white) – bantu deteksi replacement.
+                // SECURITY: Invisible marker via hidden text (tiny white) â€“ bantu deteksi replacement.
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->SetFont('helvetica', '', 1);
                 $pdf->Text(1, 1, 'TTE|' . $certificate->id . '|' . $publicToken . '|' . substr($signatureBase64, 0, 24));

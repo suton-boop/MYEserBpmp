@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Domain\Certificates\Models\AuditLog;
+use App\\Models\\AuditLog;
 use Illuminate\Http\Request;
 
 class AuditController extends Controller

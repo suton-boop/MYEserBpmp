@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 
 namespace App\Domain\Certificates\Services;
 
-use App\Domain\Certificates\Models\AuditLog;
+use App\\Models\\AuditLog;
 use Illuminate\Support\Facades\Auth;
 
 class AuditLogger

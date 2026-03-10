@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Certificates\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -11,8 +11,8 @@ class ApprovalLog extends Model
     use HasUuids;
 
     protected $fillable = [
-        'certificate_id','level','action','note',
-        'acted_by','acted_ip','acted_user_agent',
+        'certificate_id', 'level', 'action', 'note',
+        'acted_by', 'acted_ip', 'acted_user_agent',
     ];
 
     public function certificate(): BelongsTo
@@ -22,6 +22,6 @@ class ApprovalLog extends Model
 
     public function actor(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class, 'acted_by');
+        return $this->belongsTo(User::class , 'acted_by');
     }
 }

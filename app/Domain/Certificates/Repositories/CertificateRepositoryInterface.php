@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 
 namespace App\Domain\Certificates\Repositories;
 
-use App\Domain\Certificates\Models\Certificate;
+use App\\Models\\Certificate;
 
 interface CertificateRepositoryInterface
 {

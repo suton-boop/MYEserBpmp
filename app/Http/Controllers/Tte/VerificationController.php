@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Tte;
 
 use App\Http\Controllers\Controller;
-use App\Domain\Certificates\Models\DigitalSignature;
+use App\\Models\\DigitalSignature;
 use App\Domain\Certificates\Services\VerificationService;
 use App\Domain\Certificates\Services\AuditLogger;
 use Illuminate\Http\Request;

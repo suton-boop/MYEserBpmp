@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Certificates\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -21,6 +21,6 @@ class AuditLog extends Model
 
     public function actor()
     {
-        return $this->belongsTo(\App\Models\User::class , 'actor_id');
+        return $this->belongsTo(User::class , 'actor_id');
     }
 }
