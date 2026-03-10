@@ -28,7 +28,8 @@ class VerificationService
                 "signer" => $signer,
                 "signed_at" => $sig->signed_at,
             ];
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             return [
                 "success" => false,
                 "message" => $e->getMessage(),
