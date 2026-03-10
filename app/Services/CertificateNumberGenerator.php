@@ -20,7 +20,7 @@ class CertificateNumberGenerator
 
             $prefix = str_pad((string)$nextSeq, 4, '0', STR_PAD_LEFT);
 
-            $number = "{$prefix}/Sertifikat/BPMP.Kaltim/{$year}";
+            $number = "{$prefix}/Sertifikat/BPMPKALTIM/{$year}";
 
             return [
                 'certificate_number' => $number,
