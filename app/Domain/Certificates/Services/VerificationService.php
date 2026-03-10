@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Domain\Certificates\Services;
 
@@ -11,27 +11,27 @@ use Illuminate\Support\Facades\Storage;
 
 class VerificationService
 {
-    public function verifyRemote(string \, string \): array
+    public function verifyRemote(string $token, string $secret): array
     {
         try {
-            \ = JWT::decode(\, new Key(\, 'HS256'));
-            \ = (int)\->sub;
+            $payload = JWT::decode($token, new Key($secret, "HS256"));
+            $certId = (int)$payload->sub;
 
-            \ = Certificate::query()->with(['participant', 'event'])->findOrFail(\);
-            \ = DigitalSignature::query()->where('certificate_id', \->id)->firstOrFail();
-            \ = SignerCertificate::query()->findOrFail(\->signer_certificate_id);
+            $cert = Certificate::query()->with(["participant", "event"])->findOrFail($certId);
+            $sig = DigitalSignature::query()->where("certificate_id", $cert->id)->firstOrFail();
+            $signer = SignerCertificate::query()->findOrFail($sig->signer_certificate_id);
 
             return [
-                'success' => true,
-                'certificate' => \,
-                'signature' => \,
-                'signer' => \,
-                'signed_at' => \->signed_at,
+                "success" => true,
+                "certificate" => $cert,
+                "signature" => $sig,
+                "signer" => $signer,
+                "signed_at" => $sig->signed_at,
             ];
-        } catch (\Exception \) {
+        } catch (\Exception $e) {
             return [
-                'success' => false,
-                'message' => \->getMessage(),
+                "success" => false,
+                "message" => $e->getMessage(),
             ];
         }
     }
