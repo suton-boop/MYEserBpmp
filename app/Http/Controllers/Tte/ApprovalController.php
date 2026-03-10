@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Tte;
 
 use App\Http\Controllers\Controller;
-use App\\Models\\Certificate;
-use App\\Models\\ApprovalLog;
+use App\Models\Certificate;
+use App\Models\ApprovalLog;
 use App\Domain\Certificates\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;

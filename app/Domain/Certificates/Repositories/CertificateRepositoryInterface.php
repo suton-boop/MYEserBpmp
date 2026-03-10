@@ -2,7 +2,7 @@
 
 namespace App\Domain\Certificates\Repositories;
 
-use App\\Models\\Certificate;
+use App\Models\Certificate;
 
 interface CertificateRepositoryInterface
 {

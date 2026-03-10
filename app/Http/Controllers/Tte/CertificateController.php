@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Tte;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tte\CertificateCreateRequest;
-use App\\Models\\Certificate;
+use App\Models\Certificate;
 use App\Domain\Certificates\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;

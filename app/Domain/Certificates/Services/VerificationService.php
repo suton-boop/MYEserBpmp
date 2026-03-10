@@ -2,8 +2,8 @@
 
 namespace App\Domain\Certificates\Services;
 
-use App\\Models\\Certificate;
-use App\\Models\\DigitalSignature;
+use App\Models\Certificate;
+use App\Models\DigitalSignature;
 use App\Models\SignerCertificate;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;

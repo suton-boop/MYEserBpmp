@@ -2,7 +2,7 @@
 
 namespace App\Domain\Certificates\Services;
 
-use App\\Models\\AuditLog;
+use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
 
 class AuditLogger

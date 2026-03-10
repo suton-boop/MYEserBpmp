@@ -3,8 +3,8 @@
 namespace App\Domain\Certificates\Services;
 
 use App\Domain\Certificates\DTO\SignResult;
-use App\\Models\\Certificate;
-use App\\Models\\DigitalSignature;
+use App\Models\Certificate;
+use App\Models\DigitalSignature;
 use App\Models\SignerCertificate;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\DB;

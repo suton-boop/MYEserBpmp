@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Tte;
 
 use App\Http\Controllers\Controller;
-use App\\Models\\SignerCertificate;
+use App\Models\SignerCertificate;
 use App\Domain\Certificates\Services\KeyManagerService;
 use App\Domain\Certificates\Services\AuditLogger;
 use Illuminate\Http\Request;
