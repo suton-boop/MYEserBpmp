@@ -164,15 +164,26 @@
   // helper Auto-Resize Font untuk menghindari Overlap (Teks Bertumpuk)
   $getFontSize = function($text, $config, $defaultSize) use ($get) {
       $baseSize = (float)$get($config, 'font', $defaultSize);
-      $width = (float)$get($config, 'w', 1123);
+      $boxWidth = (float)$get($config, 'w', 1123);
       
-      // Estimasi lebar dalam pixel (Karakter font berasumsi mengambil ~65% dari ukurannya agar lebih aman bagi teks kapital tebal)
-      $estimatedWidth = mb_strlen(trim(strip_tags((string)$text))) * ($baseSize * 0.65);
+      $charCount = mb_strlen(trim(strip_tags((string)$text)));
+      if ($charCount <= 0) return $baseSize;
+
+      // Estimasi lebar: Karakter rata-rata (font DejaVu Sans).
+      // Huruf kapital/lebar biasanya butuh ~0.8 dari size, huruf kecil ~0.6.
+      // Kita hitung proporsi huruf besar untuk estimasi yang lebih akurat.
+      $upperCount = preg_match_all('/[A-Z0-9]/', $text);
+      $upperRatio = $upperCount / $charCount;
+      $multiplier = 0.6 + ($upperRatio * 0.25); // Range 0.6 s/d 0.85
+
+      $estimatedWidth = $charCount * ($baseSize * $multiplier);
       
-      // Jika diprediksi kepanjangan melebihi batas kotak 95%, kita paksa perkecil Font-nya
-      if ($estimatedWidth > ($width * 0.95) && $estimatedWidth > 0) {
-          $newSize = $baseSize * (($width * 0.95) / $estimatedWidth);
-          return max($newSize, 12); // Paling mini jangan kurang dari 12px
+      // Gunakan batas aman (Margin) agar tidak mepet ke pinggir gambar (Safe Area ~92%)
+      $safeWidth = $boxWidth * 0.92;
+      
+      if ($estimatedWidth > $safeWidth) {
+          $newSize = $baseSize * ($safeWidth / $estimatedWidth);
+          return max($newSize, 10); // Paling mini 10px
       }
       return $baseSize;
   };
