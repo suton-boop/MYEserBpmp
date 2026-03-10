@@ -193,7 +193,7 @@
     'number'      => ['x'=>0, 'y'=>210, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'600'],
     'name'        => ['x'=>0, 'y'=>315, 'w'=>1123, 'font'=>48, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'700'],
     'event'       => ['x'=>0, 'y'=>410, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
-    'desc'        => ['x'=>76, 'y'=>460, 'w'=>971,  'font'=>16, 'color'=>'#111111', 'align'=>'justify','weight'=>'400'],
+    'desc'        => ['x'=>0, 'y'=>460, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'400'],
     'date'        => ['x'=>0, 'y'=>567, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'500'],
     'nik'         => ['x'=>0, 'y'=>345, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'600'],
     'peran'       => ['x'=>0, 'y'=>425, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
