@@ -14,10 +14,7 @@ class TrackVisitor
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Don't track admin panel or API requests if needed
-        // but usually we track public home page.
-        // Let's track everything except common assets
-        if (!$request->is('admin*') && !$request->ajax()) {
+        if (!auth()->check() && !$request->is('admin*') && !$request->ajax()) {
             Visitor::create([
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
