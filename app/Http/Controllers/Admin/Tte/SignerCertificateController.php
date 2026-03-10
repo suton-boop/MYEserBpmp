@@ -26,9 +26,9 @@ class SignerCertificateController extends Controller
         return view('admin.tte.signers.create');
     }
 
-    public function store(Request \)
+    public function store(Request $request)
     {
-        \ = \->validate([
+        $data = $request->validate([
             'code' => ['required','string','max:50','unique:signer_certificates,code'],
             'name' => ['required','string','max:150'],
             'public_key_pem' => ['required','string'],
@@ -38,24 +38,24 @@ class SignerCertificateController extends Controller
         ]);
 
         // SECURITY: jangan pernah log private_key_pem
-        \ = \->keys->createSignerCertificate(
-            code: \['code'],
-            name: \['name'],
-            publicKeyPem: \['public_key_pem'],
-            privateKeyPem: \['private_key_pem'],
-            createdBy: \->user()->id,
-            validFrom: \['valid_from'] ?? null,
-            validTo: \['valid_to'] ?? null,
+        $cert = $this->keys->createSignerCertificate(
+            code: $data['code'],
+            name: $data['name'],
+            publicKeyPem: $data['public_key_pem'],
+            privateKeyPem: $data['private_key_pem'],
+            createdBy: $request->user()->id,
+            validFrom: $data['valid_from'] ?? null,
+            validTo: $data['valid_to'] ?? null,
         );
 
-        \->audit->log(
+        $this->audit->log(
             'signer_certificate.created',
-            \->id,
+            $cert->id,
             SignerCertificate::class,
-            ['code' => \->code, 'name' => \->name],
-            \->user()->id,
-            \->ip(),
-            \->userAgent()
+            ['code' => $cert->code, 'name' => $cert->name],
+            $request->user()->id,
+            $request->ip(),
+            $request->userAgent()
         );
 
         return redirect()->route('admin.tte.signers.index')->with('success', 'Signer certificate dibuat.');
