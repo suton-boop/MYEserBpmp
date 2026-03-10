@@ -75,6 +75,7 @@ class SigningController extends Controller
             'appearance_y' => ['nullable', 'integer', 'min:0', 'max:20000'],
             'appearance_w' => ['nullable', 'integer', 'min:5', 'max:20000'],
             'appearance_h' => ['nullable', 'integer', 'min:5', 'max:20000'],
+            'placements' => ['nullable', 'array'],
         ]);
 
         $cert = Certificate::query()->with(['event', 'participant'])->find((int)$id);
@@ -89,21 +90,25 @@ class SigningController extends Controller
         if (!$cert->pdf_path)
             return back()->with('error', 'PDF belum tersedia. Generate PDF dulu (final_generated).');
 
+        $placements = $validated['placements'] ?? [
+            [
+                'page' => (int)($validated['appearance_page'] ?? 1),
+                'x' => (int)($validated['appearance_x'] ?? 0),
+                'y' => (int)($validated['appearance_y'] ?? 0),
+                'w' => (int)($validated['appearance_w'] ?? 200),
+                'h' => (int)($validated['appearance_h'] ?? 80),
+                'barcode_visible' => (bool)($validated['barcode_visible'] ?? false),
+                'tte_visible' => (bool)($validated['tte_visible'] ?? false),
+            ]
+        ];
+
         SignCertificateJob::dispatch(
             (int)$cert->id,
             (string)$signer->code,
             (int)$request->user()->id,
             (string)$request->ip(),
             (string)$request->userAgent(),
-        [
-            'barcode_visible' => (bool)($validated['barcode_visible'] ?? false),
-            'tte_visible' => (bool)($validated['tte_visible'] ?? false),
-            'page' => (int)($validated['appearance_page'] ?? 1),
-            'x' => (int)($validated['appearance_x'] ?? 0),
-            'y' => (int)($validated['appearance_y'] ?? 0),
-            'w' => (int)($validated['appearance_w'] ?? 200),
-            'h' => (int)($validated['appearance_h'] ?? 80),
-        ]
+        ['placements' => $placements]
         )->onQueue('tte-signing');
 
         return back()->with('success', 'Dispatch sign sukses (1 data).');
@@ -124,6 +129,7 @@ class SigningController extends Controller
             'appearance_h' => ['nullable', 'integer', 'min:5', 'max:20000'],
             'q' => ['nullable', 'string', 'max:100'],
             'event_id' => ['nullable'],
+            'placements' => ['nullable', 'array'],
         ]);
 
         $signer = SignerCertificate::query()->where('id', $validated['signer_certificate_id'])->where('is_active', true)->first();
@@ -140,15 +146,19 @@ class SigningController extends Controller
         if ($certs->count() === 0)
             return back()->with('error', 'Tidak ada sertifikat valid untuk dispatch.');
 
-        $appearance = [
-            'barcode_visible' => (bool)($validated['barcode_visible'] ?? false),
-            'tte_visible' => (bool)($validated['tte_visible'] ?? false),
-            'page' => (int)($validated['appearance_page'] ?? 1),
-            'x' => (int)($validated['appearance_x'] ?? 0),
-            'y' => (int)($validated['appearance_y'] ?? 0),
-            'w' => (int)($validated['appearance_w'] ?? 200),
-            'h' => (int)($validated['appearance_h'] ?? 80),
+        $placements = $validated['placements'] ?? [
+            [
+                'page' => (int)($validated['appearance_page'] ?? 1),
+                'x' => (int)($validated['appearance_x'] ?? 0),
+                'y' => (int)($validated['appearance_y'] ?? 0),
+                'w' => (int)($validated['appearance_w'] ?? 200),
+                'h' => (int)($validated['appearance_h'] ?? 80),
+                'barcode_visible' => (bool)($validated['barcode_visible'] ?? false),
+                'tte_visible' => (bool)($validated['tte_visible'] ?? false),
+            ]
         ];
+
+        $appearance = ['placements' => $placements];
 
         $count = 0;
         foreach ($certs as $c) {

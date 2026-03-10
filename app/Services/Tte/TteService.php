@@ -46,13 +46,10 @@ class TteService
             throw new \RuntimeException("Signer tidak ditemukan / tidak aktif: {$signerCertCode}");
         }
 
-        $barcodeVisible = (bool)($appearance['barcode_visible'] ?? true);
-        $tteVisible     = (bool)($appearance['tte_visible'] ?? true);
-
         // URL verifikasi publik
         $verifyUrl = route('public.verify.show', ['code' => $cert->verify_token]);
 
-        // 1) Generate QR PNG (BINARY) via chillerlan (tanpa bacon/endroid)
+        // 1) Generate QR PNG (BINARY) via chillerlan
         $pngBinary = $this->makeQrPngBinary($verifyUrl, (int)($appearance['qr_scale'] ?? 5), $cert->id);
 
         // 2) Simpan PNG sementara
@@ -69,15 +66,25 @@ class TteService
             @mkdir($outDir, 0777, true);
         }
 
-        // 4) Stamp QR ke PDF
-        $this->stampPdfWithQr(
-            inputPdfAbs: $inputPdfAbs,
-            outputPdfAbs: $outputPdfAbs,
-            qrPngAbs: Storage::disk('public')->path($qrTmpPath),
-            barcodeVisible: $barcodeVisible,
-            tteVisible: $tteVisible,
-            appearance: $appearance,
-            signerName: $signer->name ?? $signer->code,
+        // 4) Stamp QR ke PDF menggunakan Multi-Placement
+        $placements = !empty($appearance['placements']) ? $appearance['placements'] : [
+            [
+                'page' => (int)($appearance['page'] ?? 1),
+                'x' => (float)($appearance['x'] ?? 20),
+                'y' => (float)($appearance['y'] ?? 160),
+                'w' => (float)($appearance['w'] ?? 35),
+                'h' => (float)($appearance['h'] ?? 35),
+                'tte_visible' => (bool)($appearance['tte_visible'] ?? true),
+                'barcode_visible' => (bool)($appearance['barcode_visible'] ?? true),
+            ]
+        ];
+
+        $this->stampPdfWithQrMulti(
+            $inputPdfAbs,
+            $outputPdfAbs,
+            Storage::disk('public')->path($qrTmpPath),
+            $placements,
+            $signer->name ?? $signer->code
         );
 
         // 5) Hapus QR temp
@@ -156,25 +163,41 @@ class TteService
         array $appearance,
         string $signerName
     ): void {
-        if (!$barcodeVisible && !$tteVisible) {
-            copy($inputPdfAbs, $outputPdfAbs);
-            return;
-        }
+        // 4) Stamp QR ke PDF menggunakan Multi-Placement
+        $placements = !empty($appearance['placements']) ? $appearance['placements'] : [
+            [
+                'page' => (int)($appearance['page'] ?? 1),
+                'x' => (float)($appearance['x'] ?? 20),
+                'y' => (float)($appearance['y'] ?? 160),
+                'w' => (float)($appearance['w'] ?? 35),
+                'h' => (float)($appearance['h'] ?? 35),
+                'tte_visible' => (bool)($appearance['tte_visible'] ?? true),
+                'barcode_visible' => (bool)($appearance['barcode_visible'] ?? true),
+            ]
+        ];
 
+        $this->stampPdfWithQrMulti(
+            $inputPdfAbs,
+            $outputPdfAbs,
+            $qrPngAbs,
+            $placements,
+            $signerName
+        );
+    }
+
+    private function stampPdfWithQrMulti(
+        string $inputPdfAbs,
+        string $outputPdfAbs,
+        string $qrPngAbs,
+        array $placements,
+        string $signerName
+    ): void {
         if (!class_exists(Fpdi::class)) {
             throw new \RuntimeException("FPDI belum terpasang. Install: composer require setasign/fpdi setasign/fpdf");
         }
 
-        // koordinat MM langsung
-        $page = (int)($appearance['page'] ?? 1);
-        $xMm  = (float)($appearance['x_mm'] ?? 20);
-        $yMm  = (float)($appearance['y_mm'] ?? 160);
-        $wMm  = (float)($appearance['w_mm'] ?? 35);
-        $hMm  = (float)($appearance['h_mm'] ?? 35);
-
         $pdf = new Fpdi();
         $pdf->SetAutoPageBreak(false);
-
         $pageCount = $pdf->setSourceFile($inputPdfAbs);
 
         for ($i = 1; $i <= $pageCount; $i++) {
@@ -184,15 +207,25 @@ class TteService
             $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
             $pdf->useTemplate($tpl);
 
-            if ($i === $page) {
-                if ($barcodeVisible) {
-                    $pdf->Image($qrPngAbs, $xMm, $yMm, $wMm, $hMm);
-                }
+            foreach ($placements as $placement) {
+                $pPage = (int)($placement['page'] ?? 1);
+                if ($i === $pPage) {
+                    $xMm = (float)($placement['x'] ?? 20);
+                    $yMm = (float)($placement['y'] ?? 160);
+                    $wMm = (float)($placement['w'] ?? 35);
+                    $hMm = (float)($placement['h'] ?? 35);
+                    $barcodeVisible = (bool)($placement['barcode_visible'] ?? true);
+                    $tteVisible = (bool)($placement['tte_visible'] ?? true);
 
-                if ($tteVisible) {
-                    $pdf->SetFont('Helvetica', '', 8);
-                    $pdf->SetXY($xMm, $yMm + $hMm + 2);
-                    $pdf->Cell($wMm, 4, "TTE: {$signerName}", 0, 0);
+                    if ($barcodeVisible) {
+                        $pdf->Image($qrPngAbs, $xMm, $yMm, $wMm, $hMm);
+                    }
+
+                    if ($tteVisible) {
+                        $pdf->SetFont('Helvetica', '', 8);
+                        $pdf->SetXY($xMm, $yMm + $hMm + 2);
+                        $pdf->Cell($wMm, 4, "TTE: {$signerName}", 0, 0, 'C');
+                    }
                 }
             }
         }

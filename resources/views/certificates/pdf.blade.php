@@ -3,18 +3,21 @@
 <head>
   <meta charset="utf-8">
   <style>
-    @page { margin: 0; }
-    html, body { margin: 0; padding: 0; }
-    body { font-family: DejaVu Sans, sans-serif; }
+    @page { size: A4 landscape; margin: 0; }
+    html, body { margin: 0; padding: 0; width: 297mm; height: 210mm; }
+    body { font-family: DejaVu Sans, sans-serif; -webkit-print-color-adjust: exact; }
 
     /* Kanvas relative agar posisi setiap field konsisten tapi tak berulang di next page */
     .page {
       position: relative;
-      width: 1122px;   /* A4 landscape kira-kira @96dpi (1122.5px x 793.7px) */
-      height: 793px;
-      overflow: hidden;
+      width: 297mm;
+      height: 210mm;
       display: block;
-      page-break-inside: avoid;
+      clear: both;
+      page-break-after: always;
+    }
+    .page:last-child {
+      page-break-after: avoid;
     }
 
     .field {
@@ -26,86 +29,112 @@
 
     /* CSS Khusus Halaman 2 (Nilai/Transkrip) */
     .page-2-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       font-family: 'Helvetica', 'Arial', sans-serif;
-      font-size: 13px;
-      line-height: 1.25;
+      font-size: 10px;
+      line-height: 1.1;
       color: #333;
+      padding: 10mm 15mm;
+      box-sizing: border-box;
+      z-index: 10;
     }
     .page-2-content .transcript-header {
-      width: 100%;
-      margin-bottom: 20px;
+      width: 100% !important;
+      margin: 0 auto 10px auto;
       border-collapse: collapse;
     }
     .page-2-content .transcript-header td {
       padding: 3px 0;
       vertical-align: top;
       border: none !important;
+      font-size: 12px;
     }
+    .page-2-content .transcript-header td:first-child { width: 160px; }
+    .page-2-content .transcript-header td:nth-child(2) { width: 15px; }
     .page-2-content table.main-table {
-      width: 950px !important; /* Paksa lebar total agar tidak meluber dari A4 Landscape */
-      margin-left: auto;
+      width: 98% !important; /* Diperkecil sedikit agar tidak memicu halaman baru */
+      margin-left: 0;
       margin-right: auto;
-      border-collapse: collapse;
-      table-layout: fixed !important; 
-      border: 1px solid #000 !important;
-    }
-    .page-2-content table.main-table th {
-      background-color: #996515 !important; /* Warna Emas/Coklat Premium */
-      color: #ffffff !important;
-      font-weight: bold !important;
-      text-align: center !important;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 10px 5px !important; /* Padding lebih tebal agar cantik */
-      border: 1px solid #7d5311 !important; /* Border warna senada */
-      font-size: 11px !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important; /* Paksa lebar kolom agar tidak meluber */
+      border: 1.5px solid #0B3D91 !important;
+      margin-top: 5px;
     }
     .page-2-content table.main-table th, 
     .page-2-content table.main-table td {
-      border: 1px solid #000 !important;
-      padding: 6px 5px !important;
+      border: 1px solid #0B3D91 !important;
+      padding: 4px 8px !important;
       vertical-align: middle;
-      font-size: 11px !important;
-      line-height: 1.2;
-      word-wrap: break-word;
+      font-size: 10px !important;
+      line-height: 1.1;
+      box-sizing: border-box;
+      word-wrap: break-word !important; /* Paksa teks turun jika kolom sempit */
     }
-    /* Kunci Lebar Kolom secara Absolut */
-    .page-2-content table.main-table th.col-no,
-    .page-2-content table.main-table td.col-no {
-      width: 30px !important; 
-      text-align: center;
+    .page-2-content table.main-table th {
+      background-color: #FFD700 !important;
+      color: #0B3D91 !important;
+      font-weight: bold !important;
+      text-transform: uppercase;
+      text-align: center !important;
     }
-    .page-2-content table.main-table th.col-nilai,
-    .page-2-content table.main-table td.col-nilai {
-      width: 70px !important;
-      text-align: center;
+    .page-2-content table.main-table .col-no { 
+      width: 40px !important; 
+      text-align: center; 
     }
-    .page-2-content table.main-table th.col-predikat,
-    .page-2-content table.main-table td.col-predikat {
-      width: 80px !important;
-      text-align: center;
+    .page-2-content table.main-table .col-nilai { 
+      width: 80px !important; 
+      text-align: center; 
     }
-    /* Kolom Komponen mengambil sisanya secara otomatis */
-    .page-2-content table.main-table .col-komponen {
-      width: auto !important;
+    .page-2-content table.main-table .col-predikat { 
+      width: 100px !important; 
+      text-align: center; 
     }
-
+    .page-2-content table.main-table .col-komponen { 
+      width: auto !important; 
+    }
+    
     .page-2-content .text-center { text-align: center !important; }
     .page-2-content .fw-bold { font-weight: bold !important; }
-    
     .page-2-title {
-      text-align: center;
-      font-size: 21px;
+      text-align: left;
+      font-size: 16px;
       font-weight: 800;
-      margin-bottom: 25px;
-      color: #000;
-      letter-spacing: 1px;
+      margin-top: 0;
+      margin-bottom: 5px;
+      color: #0B3D91;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+    }
+    .transcript-footer {
+      font-size: 10px;
+      color: #555;
+      font-style: italic;
+      margin-top: 5px;
+      width: 100% !important;
     }
 
-    .transcript-footer {
-      margin-top: 10px;
-      font-size: 11px;
-      line-height: 1.4;
+    /* Penyeimbang agar tabel rapi */
+    .page-2-content table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      margin-bottom: 10px;
+    }
+    
+    .page-2-content tr.row-header {
+       background-color: #FFD700 !important;
+    }
+    
+    .page-2-content td.bg-yellow {
+       background-color: #FFD700 !important;
+       font-weight: bold;
+    }
+
+    .page-break {
+      page-break-after: always;
     }
   </style>
 </head>
@@ -203,11 +232,14 @@
   $descText = trim((string)($event?->description ?? ''));
 @endphp
 
-<div class="page">
+<div class="page {{ !empty($template->page_2_html) ? 'page-break' : '' }}">
   {{-- BACKGROUND --}}
-  @if($bgAbs && file_exists($bgAbs))
+  @if(!empty($bgDataUri))
+    <img src="{{ $bgDataUri }}"
+         style="position:absolute; left:0; top:0; width:297mm; height:210mm; z-index:-1;">
+  @elseif($bgAbs && file_exists($bgAbs))
     <img src="{{ $bgAbs }}"
-         style="position:absolute; left:0; top:0; width:1122px; height:793px; z-index:-1;">
+         style="position:absolute; left:0; top:0; width:297mm; height:210mm; z-index:-1;">
   @endif
 
   {{-- 1) NOMOR SERTIFIKAT --}}
@@ -343,36 +375,26 @@
 
 @if(!empty($template->page_2_html))
   @php
-      // Eksekusi replace {{ key }} dengan database kolom atau metadara
       $page2Content = $template->page_2_html;
       $metadata = is_array($participant->metadata) ? $participant->metadata : [];
-      
-      // Mengubah string statis {{ nama_kolom }} menjadi data aslinya
       foreach ($metadata as $key => $val) {
-          $page2Content = str_replace('{{ ' . $key . ' }}', $val ?? '', $page2Content);
-          $page2Content = str_replace('{{' . $key . '}}', $val ?? '', $page2Content); // tanpa spasi
-          
-          // support old style {key}
-          $page2Content = str_replace('{' . $key . '}', $val ?? '', $page2Content);
+          $page2Content = str_replace(['{{ '.$key.' }}', '{{'.$key.'}}', '{'.$key.'}'], $val ?? '', $page2Content);
       }
-      
-      // Fallback untuk var default
-      $page2Content = str_replace('{{ name }}', $nameText, $page2Content);
-      $page2Content = str_replace('{{ nik }}', $participant->nik ?? '-', $page2Content);
-      $page2Content = str_replace('{{ institution }}', $participant->institution ?? '-', $page2Content);
-      $page2Content = str_replace('{{ daerah }}', $participant->daerah ?? '-', $page2Content);
-      $page2Content = str_replace('{{ jenjang }}', $participant->jenjang ?? '-', $page2Content);
-      $page2Content = str_replace('{{ peran }}', $participant->peran ?? '-', $page2Content);
-      $page2Content = str_replace('{{ keterangan }}', $participant->keterangan ?? '-', $page2Content);
+      $page2Content = str_replace([
+          '{{ name }}', '{{ nik }}', '{{ institution }}', '{{ daerah }}', '{{ jenjang }}', '{{ peran }}', '{{ keterangan }}',
+          'width:1000px', 'width: 1000px', 'width="1000"', 'width="180"', 'margin-left:auto; margin-right:auto;'
+      ], [
+          $nameText, $participant->nik ?? '-', $participant->institution ?? '-', $participant->daerah ?? '-', 
+          $participant->jenjang ?? '-', $participant->peran ?? '-', $participant->keterangan ?? '-',
+          'width:100%', 'width:100%', 'width="100%"', 'width="18%"', 'margin-left:auto; margin-right:auto;'
+      ], $page2Content);
   @endphp
-
-  <div class="page" style="page-break-before: always; position: relative;">
+  <div class="page" style="position: relative;">
     {{-- BACKGROUND PAGE 2 --}}
     @if(!empty($bgDataUri2))
-      <img src="{{ $bgDataUri2 }}" style="position:absolute; left:0; top:0; width:1122px; height:793px; z-index:-1;">
+      <img src="{{ $bgDataUri2 }}" style="position:absolute; left:0; top:0; width:297mm; height:210mm; z-index:-1;">
     @endif
-    
-    <div class="page-2-content" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; padding: 40px 60px; box-sizing: border-box; z-index: 10;">
+    <div class="page-2-content">
         <div class="transcript-wrapper">
             {!! $page2Content !!}
         </div>

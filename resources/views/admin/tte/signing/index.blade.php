@@ -82,38 +82,40 @@
       </div>
       
       <div class="col-md-7 border-start">
-         <label class="form-label small text-muted fw-bold mb-2">Penyesuaian Visual TTE (Opsional)</label>
-         <div class="d-flex align-items-center gap-3 flex-wrap">
-            <div class="form-check form-switch mt-1">
-              <input class="form-check-input shadow-sm" type="checkbox" id="globalBarcode" checked>
-              <label class="form-check-label small" for="globalBarcode">Tampilkan Barcode</label>
-            </div>
-            <div class="form-check form-switch mt-1">
-              <input class="form-check-input shadow-sm" type="checkbox" id="globalTte" checked>
-              <label class="form-check-label small" for="globalTte">Teks & Stamp TTE</label>
-            </div>
-            
-            <div class="input-group input-group-sm shadow-sm" style="width: 85px;" title="Halaman Posisi TTE">
-              <span class="input-group-text bg-light border-0">Hal</span>
-              <input type="number" class="form-control border-light" id="globalPage" value="1" min="1">
-            </div>
-            <div class="input-group input-group-sm shadow-sm" style="width: 85px;" title="Titik X (Horizontal)">
-              <span class="input-group-text bg-light border-0"><i class="fa-solid fa-arrows-left-right text-muted mx-1"></i></span>
-              <input type="number" class="form-control border-light" id="globalX" value="0">
-            </div>
-            <div class="input-group input-group-sm shadow-sm" style="width: 85px;" title="Titik Y (Vertikal)">
-              <span class="input-group-text bg-light border-0"><i class="fa-solid fa-arrows-up-down text-muted mx-1"></i></span>
-              <input type="number" class="form-control border-light" id="globalY" value="0">
-            </div>
-            <div class="input-group input-group-sm shadow-sm" style="width: 95px;" title="Lebar Area TTE">
-              <span class="input-group-text bg-light border-0">Lebar</span>
-              <input type="number" class="form-control border-light" id="globalW" value="5">
-            </div>
-            <div class="input-group input-group-sm shadow-sm" style="width: 95px;" title="Tinggi Area TTE">
-              <span class="input-group-text bg-light border-0">Tinggi</span>
-              <input type="number" class="form-control border-light" id="globalH" value="5">
-            </div>
+         <label class="form-label small text-muted fw-bold mb-2">Penyesuaian Visual TTE (Multi Halaman)</label>
+         <div id="placementContainer">
+             <div class="placement-row d-flex align-items-center gap-2 mb-2 flex-wrap bg-light p-2 rounded-3 border">
+                <div class="input-group input-group-sm shadow-sm" style="width: 85px;" title="Halaman Posisi TTE">
+                  <span class="input-group-text bg-white border-0">Hal</span>
+                  <input type="number" class="form-control border-light placement-page" value="1" min="1">
+                </div>
+                <div class="input-group input-group-sm shadow-sm" style="width: 75px;" title="Titik X (Horizontal mm)">
+                  <input type="number" class="form-control border-light placement-x" value="20" placeholder="X">
+                </div>
+                <div class="input-group input-group-sm shadow-sm" style="width: 75px;" title="Titik Y (Vertikal mm)">
+                  <input type="number" class="form-control border-light placement-y" value="160" placeholder="Y">
+                </div>
+                <div class="input-group input-group-sm shadow-sm" style="width: 85px;" title="Lebar Area TTE (mm)">
+                  <span class="input-group-text bg-white border-0">W</span>
+                  <input type="number" class="form-control border-light placement-w" value="35">
+                </div>
+                <div class="input-group input-group-sm shadow-sm" style="width: 85px;" title="Tinggi Area TTE (mm)">
+                  <span class="input-group-text bg-white border-0">H</span>
+                  <input type="number" class="form-control border-light placement-h" value="35">
+                </div>
+                <div class="form-check form-switch ms-2">
+                  <input class="form-check-input placement-barcode" type="checkbox" checked>
+                  <label class="form-check-label x-small">QR</label>
+                </div>
+                <div class="form-check form-switch ms-1">
+                  <input class="form-check-input placement-tte" type="checkbox" checked>
+                  <label class="form-check-label x-small">Teks</label>
+                </div>
+             </div>
          </div>
+         <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btnAddPlacement">
+             <i class="fa-solid fa-plus me-1"></i> Tambah Lokasi Sign (Halaman Lain)
+         </button>
       </div>
     </div>
   </div>
@@ -213,6 +215,7 @@
     <input type="hidden" name="appearance_w" id="formW">
     <input type="hidden" name="appearance_h" id="formH">
     <div id="formCertificatesIds"></div>
+    <div id="formPlacements"></div>
 </form>
 
 <script>
@@ -248,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formW = document.getElementById('formW');
     const formH = document.getElementById('formH');
     const formCertificatesIds = document.getElementById('formCertificatesIds');
+    const formPlacements = document.getElementById('formPlacements');
 
     // Method to safely grab values to the hidden form
     const populateVariables = () => {
@@ -260,16 +264,53 @@ document.addEventListener('DOMContentLoaded', () => {
         configSigner.classList.remove('is-invalid');
 
         formSigner.value = configSigner.value;
-        formBarcode.value = configBarcode.checked ? '1' : '0';
-        formTte.value = configTte.checked ? '1' : '0';
-        formPage.value = configPage.value || '1';
-        formX.value = configX.value || '0';
-        formY.value = configY.value || '0';
-        formW.value = configW.value || '200';
-        formH.value = configH.value || '80';
+        
+        // Handle Multiple Placements
+        formPlacements.innerHTML = '';
+        const placementRows = document.querySelectorAll('.placement-row');
+        placementRows.forEach((row, index) => {
+            const data = {
+                page: row.querySelector('.placement-page').value,
+                x: row.querySelector('.placement-x').value,
+                y: row.querySelector('.placement-y').value,
+                w: row.querySelector('.placement-w').value,
+                h: row.querySelector('.placement-h').value,
+                barcode_visible: row.querySelector('.placement-barcode').checked ? 1 : 0,
+                tte_visible: row.querySelector('.placement-tte').checked ? 1 : 0
+            };
+            
+            Object.keys(data).forEach(key => {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `placements[${index}][${key}]`;
+                input.value = data[key];
+                formPlacements.appendChild(input);
+            });
+        });
         
         return true;
     };
+
+    // Add another placement row
+    document.getElementById('btnAddPlacement').addEventListener('click', () => {
+        const container = document.getElementById('placementContainer');
+        const firstRow = container.querySelector('.placement-row');
+        const newRow = firstRow.cloneNode(true);
+        
+        // Reset values for better UX (e.g. assume page 2 if adding second row)
+        const rows = container.querySelectorAll('.placement-row');
+        newRow.querySelector('.placement-page').value = rows.length + 1;
+        
+        // Add delete button
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn btn-outline-danger btn-sm px-2 border-0';
+        delBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+        delBtn.onclick = () => newRow.remove();
+        newRow.appendChild(delBtn);
+        
+        container.appendChild(newRow);
+    });
 
     // Single Button Dispatch Request Linker
     document.querySelectorAll('.btnSingleDispatch').forEach(btn => {

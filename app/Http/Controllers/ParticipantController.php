@@ -261,29 +261,40 @@ class ParticipantController extends Controller
     }
 
     /**
-     * DETEKSI DUPLIKAT DATA
+     * DETEKSI DUPLIKAT DATA (Per Event)
      */
     public function duplicates(Request $request)
     {
         $type = $request->query('type', 'nik'); // default cek NIK
+        $eventId = $request->query('event_id');
+
         if (!in_array($type, ['nik', 'email', 'name'])) {
             $type = 'nik';
         }
 
-        // Cari nilai yang muncul lebih dari 1 kali
+        // 1. Cari pasangan (nilai, event_id) yang muncul > 1 kali
         $duplicateGroups = DB::table('participants')
-            ->select($type, DB::raw('count(*) as total'))
+            ->select($type, 'event_id', DB::raw('count(*) as total'))
             ->whereNotNull($type)
             ->where($type, '!=', '')
-            ->groupBy($type)
-            ->having('total', '>', 1)
-            ->pluck($type);
+            ->when(!empty($eventId), fn($q) => $q->where('event_id', $eventId))
+            ->groupBy($type, 'event_id')
+            ->having('total', '>', 1);
 
-        $participants = Participant::whereIn($type, $duplicateGroups)
+        // 2. Ambil data lengkap peserta yang masuk dalam kelompok duplikat tersebut
+        $participants = Participant::query()
             ->with(['event:id,name'])
-            ->orderBy($type)
+            ->joinSub($duplicateGroups, 'dups', function ($join) use ($type) {
+            $join->on('participants.' . $type, '=', 'dups.' . $type)
+                ->on('participants.event_id', '=', 'dups.event_id');
+        })
+            ->select('participants.*')
+            ->orderBy('participants.event_id')
+            ->orderBy("participants.$type")
             ->get();
 
-        return view('participants.duplicates', compact('participants', 'type'));
+        $events = Event::orderBy('name')->get(['id', 'name']);
+
+        return view('participants.duplicates', compact('participants', 'type', 'events', 'eventId'));
     }
 }
