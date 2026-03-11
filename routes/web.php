@@ -204,4 +204,14 @@ Route::prefix('admin')
         Route::get('/visitors', [VisitorController::class , 'index'])->name('visitors.index');
     });
 
+Route::get('/fix-storage', function () {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+    if (file_exists($link)) {
+        return 'Link "storage" sudah ada.';
+    }
+    symlink($target, $link);
+    return 'Link "storage" berhasil dibuat.';
+});
+
 require __DIR__ . '/auth.php';
