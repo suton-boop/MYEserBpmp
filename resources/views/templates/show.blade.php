@@ -10,11 +10,11 @@
   </div>
 
   <div class="d-flex gap-2">
-    <a href="{{ route('admin.templates.edit', $template) }}" class="btn btn-warning rounded-3">
+    <a href="{{ route('admin.system.templates.edit', $template) }}" class="btn btn-warning rounded-3">
       <i class="fa-solid fa-pen-to-square me-1"></i> Edit
     </a>
 
-    <a href="{{ route('admin.templates.index') }}" class="btn btn-outline-secondary rounded-3">
+    <a href="{{ route('admin.system.templates.index') }}" class="btn btn-outline-secondary rounded-3">
       <i class="fa-solid fa-arrow-left me-1"></i> Kembali
     </a>
   </div>
