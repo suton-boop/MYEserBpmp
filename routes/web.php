@@ -207,11 +207,29 @@ Route::prefix('admin')
 Route::get('/fix-storage', function () {
     $target = storage_path('app/public');
     $link = public_path('storage');
-    if (file_exists($link)) {
-        return 'Link "storage" sudah ada.';
+    
+    $exists = file_exists($target);
+    $isLink = is_link($link);
+    $linkExists = file_exists($link);
+    
+    $msg = "Target (Actual Files): $target " . ($exists ? "[EXISTS]" : "[MISSING]") . "<br>";
+    $msg .= "Link (Public Folder): $link " . ($linkExists ? "[EXISTS]" : "[MISSING]") . " " . ($isLink ? "[IS SYMLINK]" : "[IS REGULAR DIR]") . "<br><br>";
+
+    if ($linkExists && !$isLink) {
+        $msg .= "PERINGATAN: Folder 'storage' di public adalah folder biasa, bukan shortcut. <br>";
+        $msg .= "Coba hapus folder '$link' secara manual lewat File Manager atau FTP, lalu jalankan lagi link ini.";
+        return $msg;
     }
-    symlink($target, $link);
-    return 'Link "storage" berhasil dibuat.';
+
+    if (!$linkExists) {
+        if (symlink($target, $link)) {
+            return $msg . "BERHASIL: Shortcut storage telah dibuat.";
+        } else {
+            return $msg . "GAGAL: Tidak bisa membuat shortcut. Coba gunakan 'php artisan storage:link' di PuTTY.";
+        }
+    }
+
+    return $msg . "Shortcut sudah ada dan benar.";
 });
 
 require __DIR__ . '/auth.php';
