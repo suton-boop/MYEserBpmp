@@ -331,8 +331,8 @@ class CertificateController extends Controller
             return back()->with('error', 'Tidak ada sertifikat APPROVED untuk dibuatkan PDF.');
         }
 
-        // Batasi maksimal 200 data per klik untuk kestabilan server & database request
-        $limit = 200;
+        // Batasi maksimal 50 data per klik untuk kestabilan server Hostinger
+        $limit = 50;
         $certs = $query->limit($limit)->get();
 
         $dispatched = 0;
