@@ -37,7 +37,7 @@ class SigningController extends Controller
             });
         }
 
-        $certificates = $query->orderByDesc('updated_at')->paginate(50)->withQueryString();
+        $certificates = $query->orderByDesc('updated_at')->paginate(20)->withQueryString();
         return view('admin.tte.signing.index', compact('q', 'eventId', 'events', 'signers', 'certificates'));
     }
 
