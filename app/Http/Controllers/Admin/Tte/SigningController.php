@@ -24,7 +24,7 @@ class SigningController extends Controller
         $signers = SignerCertificate::query()->where('is_active', true)->orderBy('name')->get(['id', 'code', 'name']);
 
         $query = Certificate::query()->with(['event:id,name', 'participant:id,name'])
-            ->whereIn('status', ['approved', 'final_generated', 'gagal_tte', 'Gagal_tte']);
+            ->whereIn('status', ['approved', 'final_generated', 'gagal_tte', 'Gagal_tte', 'scheduled']);
         if (!empty($eventId) && is_numeric($eventId)) {
             $query->where('event_id', (int)$eventId);
         }
@@ -103,16 +103,43 @@ class SigningController extends Controller
             ]
         ];
 
-        SignCertificateJob::dispatch(
+        $targetDate = $cert->participant->custom_date ?? $cert->event->signing_date ?? $cert->event->start_date;
+        $endDate = $cert->event->end_date;
+
+        // 1. Validasi: Tanggal TTE tidak boleh lebih awal dari akhir kegiatan
+        if ($targetDate && $endDate && $targetDate->lt($endDate)) {
+             return back()->with('error', "Gagal: Tanggal TTE ({$targetDate->format('d-m-Y')}) tidak boleh lebih awal dari akhir kegiatan ({$endDate->format('d-m-Y')}).");
+        }
+
+        // 2. Logic Antrian (Queue with Delay)
+        $delaySeconds = 0;
+        $isScheduled = false;
+        if ($targetDate && $targetDate->isFuture()) {
+            // Set ke jam 00:01 di tanggal tersebut
+            $scheduledAt = $targetDate->copy()->startOfDay()->addMinute();
+            $delaySeconds = now()->diffInSeconds($scheduledAt, false);
+            if ($delaySeconds > 0) {
+                $isScheduled = true;
+            }
+        }
+
+        $job = new SignCertificateJob(
             (int)$cert->id,
             (string)$signer->code,
             (int)$request->user()->id,
             (string)$request->ip(),
             (string)$request->userAgent(),
-        ['placements' => $placements]
-        )->onQueue('tte-signing');
+            ['placements' => $placements]
+        );
 
-        return back()->with('success', 'Dispatch sign sukses (1 data).');
+        if ($isScheduled) {
+            $cert->update(['status' => Certificate::STATUS_SCHEDULED]);
+            dispatch($job->onQueue('tte-signing'))->delay($delaySeconds);
+            return back()->with('success', 'Sertifikat masuk antrian terjadwal (akan diproses ' . $targetDate->format('d-m-Y') . ' 00:01).');
+        } else {
+            dispatch($job->onQueue('tte-signing'));
+            return back()->with('success', 'Dispatch sign sukses (1 data).');
+        }
     }
 
     public function dispatchBulk(Request $request)
@@ -163,24 +190,58 @@ class SigningController extends Controller
 
         $appearance = ['placements' => $placements];
 
-        $count = 0;
+        $countSuccess = 0;
+        $countScheduled = 0;
+        $countError = 0;
+
         foreach ($certs as $c) {
             if (!$c->pdf_path)
                 continue;
-            SignCertificateJob::dispatch(
+
+            $targetDate = $c->participant->custom_date ?? $c->event->signing_date ?? $c->event->start_date;
+            $endDate = $c->event->end_date;
+
+            // Validasi: Lewati jika tanggal tidak valid (atau beri error di akhir)
+            if ($targetDate && $endDate && $targetDate->lt($endDate)) {
+                $countError++;
+                continue;
+            }
+
+            $delaySeconds = 0;
+            $isScheduled = false;
+            if ($targetDate && $targetDate->isFuture()) {
+                $scheduledAt = $targetDate->copy()->startOfDay()->addMinute();
+                $delaySeconds = now()->diffInSeconds($scheduledAt, false);
+                if ($delaySeconds > 0) {
+                    $isScheduled = true;
+                }
+            }
+
+            $job = new SignCertificateJob(
                 (int)$c->id,
                 (string)$signer->code,
                 (int)$request->user()->id,
                 (string)$request->ip(),
                 (string)$request->userAgent(),
                 $appearance
-            )->onQueue('tte-signing');
-            $count++;
+            );
+
+            if ($isScheduled) {
+                $c->update(['status' => Certificate::STATUS_SCHEDULED]);
+                dispatch($job->onQueue('tte-signing'))->delay($delaySeconds);
+                $countScheduled++;
+            } else {
+                dispatch($job->onQueue('tte-signing'));
+                $countSuccess++;
+            }
         }
 
-        if ($count === 0)
-            return back()->with('error', 'Semua data terpilih belum punya PDF.');
-        return back()->with('success', "Bulk dispatch sukses: {$count} data (Maksimal 50 per klik demi kestabilan API).");
+        $msg = "Proses Berhasil.";
+        if ($countSuccess > 0) $msg .= " Segera diproses: {$countSuccess}.";
+        if ($countScheduled > 0) $msg .= " Dijadwalkan (Antrian): {$countScheduled}.";
+        if ($countError > 0) $msg .= " Gagal Validasi Tanggal: {$countError}.";
+
+        return back()->with('success', $msg);
     }
 
     public function signNow(Request $request, string $id)

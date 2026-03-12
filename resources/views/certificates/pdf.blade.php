@@ -230,11 +230,11 @@
 
   // format Indonesia (Februari, dll)
   // PRIORITAS: 
-  // Jika Event diatur "Dinamis", ambil dari custom_date peserta (fallback ke event).
-  // Jika Event diatur "Fix", ambil dari start_date event (tutup kemungkinan beda tanggal).
+  // Jika Event diatur "Dinamis", ambil dari custom_date peserta (fallback ke signing_date event, lalu fallback ke start_date).
+  // Jika Event diatur "Fix", ambil dari signing_date event (fallback ke start_date event).
   $rawDate = ($event?->is_date_per_participant) 
-             ? ($participant?->custom_date ?? $event?->start_date) 
-             : $event?->start_date;
+             ? ($participant?->custom_date ?? $event?->signing_date ?? $event?->start_date) 
+             : ($event?->signing_date ?? $event?->start_date);
 
   $dateText = $rawDate ? $rawDate->locale('id')->translatedFormat('d F Y') : "";
   $dateText = $dateText ? "Samarinda, {$dateText}" : "";

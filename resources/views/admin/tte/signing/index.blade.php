@@ -151,7 +151,11 @@
         @forelse(($certificates ?? collect()) as $c)
           <tr>
             <td class="text-center py-3">
-              <input class="form-check-input rowCheck shadow-sm" type="checkbox" value="{{ $c->id }}">
+              @if($c->status !== 'scheduled')
+                <input class="form-check-input rowCheck shadow-sm" type="checkbox" value="{{ $c->id }}">
+              @else
+                <i class="fa-solid fa-clock text-warning" title="Dijadwalkan"></i>
+              @endif
             </td>
             <td class="py-3">
                <div class="fw-semibold text-primary" style="font-size: 0.9em;">
@@ -166,9 +170,15 @@
             </td>
             <td class="py-3">
               @php
-                $isFailed = strtolower($c->status) === 'gagal_tte';
+                $status = strtolower((string)$c->status);
+                $isFailed = $status === 'gagal_tte';
+                $isScheduled = $status === 'scheduled';
+                
+                $badgeClass = 'bg-success';
+                if ($isFailed) $badgeClass = 'bg-danger';
+                if ($isScheduled) $badgeClass = 'bg-warning';
               @endphp
-              <span class="badge {{ $isFailed ? 'bg-danger' : 'bg-success' }} bg-opacity-10 {{ $isFailed ? 'text-danger' : 'text-success' }} border {{ $isFailed ? 'border-danger' : 'border-success' }}-subtle rounded-pill">
+              <span class="badge {{ $badgeClass }} bg-opacity-10 {{ $isScheduled ? 'text-warning-emphasis' : ($isFailed ? 'text-danger' : 'text-success') }} border {{ $isFailed ? 'border-danger' : ($isScheduled ? 'border-warning' : 'border-success') }}-subtle rounded-pill">
                 {{ strtoupper((string) $c->status) }}
               </span>
             </td>
@@ -180,9 +190,15 @@
                    <i class="fa-solid fa-eye text-secondary"></i>
                 </a>
 
-                <button type="button" class="btn btn-primary btn-sm rounded-3 shadow-sm btnSingleDispatch fw-semibold" data-id="{{ $c->id }}" title="Langsung bubuhkan Signer ke sertifikat ini">
-                  Dispatch Sign
-                </button>
+                @if(!$isScheduled)
+                  <button type="button" class="btn btn-primary btn-sm rounded-3 shadow-sm btnSingleDispatch fw-semibold" data-id="{{ $c->id }}" title="Langsung bubuhkan Signer ke sertifikat ini">
+                    Dispatch Sign
+                  </button>
+                @else
+                  <button type="button" class="btn btn-outline-warning btn-sm rounded-3 shadow-sm fw-semibold" disabled>
+                    Queued...
+                  </button>
+                @endif
               </div>
             </td>
           </tr>

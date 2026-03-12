@@ -66,6 +66,15 @@
                value="{{ old('end_date') }}" required>
       </div>
 
+      <div class="col-md-12">
+        <label class="form-label fw-semibold">Tanggal Tanda Tangan (Sertifikat)</label>
+        <input type="date"
+               name="signing_date"
+               class="form-control"
+               value="{{ old('signing_date') }}">
+        <div class="form-text">Tanggal ini yang akan muncul sebagai tanggal terbit di sertifikat. Jika kosong, akan menggunakan Tanggal Mulai.</div>
+      </div>
+
       <div class="col-12 mt-2">
         <div class="form-check form-switch card p-3 border-0 bg-light shadow-none">
           <input class="form-check-input ms-0 me-2" type="checkbox" name="is_date_per_participant" id="isDatePerParticipant" value="1" @checked(old('is_date_per_participant'))>

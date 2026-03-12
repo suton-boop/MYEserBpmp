@@ -12,12 +12,13 @@ class Event extends Model
 
     protected $fillable = [
         'name', 'location', 'start_date', 'end_date', 'description',
-        'status', 'certificate_template_id', 'certificate_appendix', 'is_date_per_participant'];
+        'status', 'certificate_template_id', 'certificate_appendix', 'is_date_per_participant', 'signing_date'];
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'certificate_appendix' => 'array',
-        'is_date_per_participant' => 'boolean', ];
+        'is_date_per_participant' => 'boolean',
+        'signing_date' => 'date', ];
 
 
 

@@ -70,6 +70,7 @@ class EventController extends Controller
             // ✅ appendix halaman 2 (json string dari textarea)
             'certificate_appendix' => ['nullable', 'json'],
             'is_date_per_participant' => ['nullable', 'boolean'],
+            'signing_date' => ['nullable', 'date'],
         ]);
 
         // jika template dipilih, pastikan template tersebut aktif
@@ -123,6 +124,7 @@ class EventController extends Controller
             // ✅ appendix halaman 2
             'certificate_appendix' => ['nullable', 'json'],
             'is_date_per_participant' => ['nullable', 'boolean'],
+            'signing_date' => ['nullable', 'date'],
         ]);
 
         if (!empty($data['certificate_template_id'])) {

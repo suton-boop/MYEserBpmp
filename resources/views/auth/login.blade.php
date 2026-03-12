@@ -156,7 +156,7 @@ margin-bottom:10px;
 
 <div class="text-center flex flex-col items-center">
 
-<img src="{{ asset('images/logo-kemendikdasmen.png') }}"
+<img src="{{ asset('public/images/logo-kemendikdasmen.png') }}"
 class="logo-top mx-auto mb-4">
 
 <div class="title-login">
@@ -244,7 +244,7 @@ Masuk Dasbor →
 
 <div class="footer-login flex flex-col items-center text-center">
 
-<img src="{{ asset('images/ramah bermutu.png') }}"
+<img src="{{ asset('public/images/ramah bermutu.png') }}"
 class="h-14 mb-3 mx-auto">
 
 <div>
