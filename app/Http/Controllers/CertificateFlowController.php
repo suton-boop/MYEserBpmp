@@ -9,17 +9,19 @@ class CertificateFlowController extends Controller
 {
     public function submit(Certificate $certificate)
     {
-        if ($certificate->status !== Certificate::STATUS_DRAFT) {
-            return back()->with('error', 'Hanya status DRAFT yang bisa diajukan.');
+        if (!in_array($certificate->status, [Certificate::STATUS_DRAFT, Certificate::STATUS_REJECTED])) {
+            return back()->with('error', 'Hanya status DRAFT atau REJECTED yang bisa diajukan.');
         }
 
-        $certificate
-            ->update([
+        $certificate->update([
             'status' => Certificate::STATUS_SUBMITTED,
             'submitted_at' => now(),
             'submitted_by' => auth()->id(),
+            // Kosongkan alasan reject jika sedang diajukan ulang
+            'rejected_at' => null,
+            'rejected_by' => null,
+            'rejected_note' => null,
         ]);
-
 
         return back()->with('success', 'Berhasil diajukan untuk persetujuan.');
     }
@@ -34,11 +36,13 @@ class CertificateFlowController extends Controller
 
         $affected = Certificate::query()
             ->where('event_id', $eventId)
-            ->where('status', Certificate::STATUS_DRAFT)
+            ->whereIn('status', [Certificate::STATUS_DRAFT, Certificate::STATUS_REJECTED])
             ->update([
             'status' => Certificate::STATUS_SUBMITTED,
             'submitted_at' => now(),
-            // HAPUS submitted_by karena kolomnya tidak ada
+            'rejected_at' => null,
+            'rejected_by' => null,
+            'rejected_note' => null,
         ]);
 
         if ($affected === 0) {

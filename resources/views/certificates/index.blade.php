@@ -59,6 +59,15 @@
         background-color: #198754;
         color: #fff;
     }
+    .btn-soft-secondary {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        border: 1px solid rgba(108, 117, 125, 0.2);
+    }
+    .btn-soft-secondary:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
     .form-label-top { font-size: 0.75rem; font-weight: 600; color: #6c757d; display: block; margin-bottom: 4px; }
     .filter-card { border: none !important; transition: all 0.3s ease; }
     .filter-card:hover { transform: translateY(-2px); }
@@ -210,14 +219,19 @@
 
             <td>
               @if($hasCert)
-                <span class="badge {{ $badgeClass }}">
+                <span class="badge {{ $badgeClass }}" @if($statusVal === \App\Models\Certificate::STATUS_REJECTED) data-bs-toggle="tooltip" title="Alasan: {{ $cert->rejected_note }}" @endif>
                   @if($statusVal === \App\Models\Certificate::STATUS_GENERATING)
                     <i class="fa-solid fa-spinner fa-spin me-1"></i>
                   @endif
                   {{ ucfirst(str_replace('_', ' ', $statusVal)) }}
                 </span>
+                @if($statusVal === \App\Models\Certificate::STATUS_REJECTED && $cert->rejected_note)
+                  <div class="text-danger small mt-1" style="font-size: 0.7rem; max-width: 150px; line-height: 1.2;">
+                    <strong>Alasan:</strong> {{ $cert->rejected_note }}
+                  </div>
+                @endif
                 <div class="text-muted small mt-1">
-                  {{ $cert->certificate_number ?? $cert->certificate_no ?? $cert->certificate_no ?? '-' }}
+                  {{ $cert->certificate_number ?? $cert->certificate_no ?? '-' }}
                 </div>
               @else
                 <span class="text-muted small">Belum ada</span>
@@ -239,7 +253,7 @@
                 </form>
 
                 {{-- 2) Ajukan: hanya saat draft --}}
-                @if($hasCert && $statusVal === \App\Models\Certificate::STATUS_DRAFT)
+                @if($hasCert && in_array($statusVal, [\App\Models\Certificate::STATUS_DRAFT, \App\Models\Certificate::STATUS_REJECTED]))
                   <form method="POST" action="{{ route('admin.certificates.submit', $cert->id) }}" class="d-inline">
                     @csrf
                     <button class="btn btn-primary btn-sm rounded-3" title="Ajukan ke Persetujuan">
@@ -247,7 +261,7 @@
                     </button>
                   </form>
                 @else
-                  <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="Ajukan hanya untuk Draft">
+                  <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="Ajukan hanya untuk Draft/Rejected">
                     <i class="fa-solid fa-paper-plane"></i>
                   </button>
                 @endif
@@ -302,6 +316,11 @@
                     </button>
                   </form>
                 @endif
+
+                {{-- 7) Edit Participant (untuk fix data) --}}
+                <a href="{{ route('admin.participants.edit', $p->id) }}" class="btn btn-soft-secondary btn-sm rounded-3" title="Edit Data Peserta">
+                  <i class="fa-solid fa-user-pen"></i>
+                </a>
 
               </div>
             </td>
