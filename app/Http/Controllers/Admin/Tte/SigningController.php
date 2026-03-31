@@ -111,22 +111,17 @@ class SigningController extends Controller
         
         $endDate = $cert->event->end_date;
 
-        // 1. Validasi Logika: Tanggal tertulis di sertifikat tidak boleh sebelum kegiatan selesai
-        // Namun jika hari ini < tanggal target, kita masukkan antrian, bukan error.
-        if ($targetDate && $endDate && $targetDate->lt($endDate)) {
-             return back()->with('error', "Gagal: Tanggal sertifikat ({$targetDate->format('d-m-Y')}) tidak boleh lebih awal dari masa berakhir kegiatan ({$endDate->format('d-m-Y')}). Silakan koreksi data event/peserta.");
-        }
+        // 1. Validasi Logika: Dulu ada pengecekan $targetDate < $endDate, sekarang dihapus agar fleksibel.
 
         // 2. Logic Antrian (Queue with Delay)
-        // Kapan paling cepat boleh di-sign? minimal hari ini, targetDate, atau endDate.
+        // Kapan paling cepat boleh di-sign? Hanya jika targetDate di masa depan.
         $now = now();
         $scheduledTime = null;
 
-        // Jika hari ini belum mencapai targetDate atau endDate, maka jadwalkan
-        if (($targetDate && $targetDate->isFuture()) || ($endDate && $endDate->isFuture())) {
-            // Ambil yang paling jauh di masa depan
-            $maxFuture = ($targetDate && $endDate) ? ($targetDate->gt($endDate) ? $targetDate : $endDate) : ($targetDate ?: $endDate);
-            $scheduledTime = $maxFuture->copy()->startOfDay()->addMinute(); // 00:01
+        // Hanya jadwalkan otomatis jika tanggal sertifikat masih lebih dari 24 jam ke depan.
+        // Ini untuk mengakomodasi perbedaan timezone server (UTC) dengan user (Jakarta).
+        if ($targetDate && $targetDate->isAfter(now()->addDay()->endOfDay())) {
+            $scheduledTime = $targetDate->copy()->startOfDay()->addMinute(); // 00:01
         }
 
         $job = new SignCertificateJob(
@@ -141,7 +136,12 @@ class SigningController extends Controller
         if ($scheduledTime) {
             $delay = $now->diffInSeconds($scheduledTime, false);
             if ($delay > 0) {
-                $cert->update(['status' => Certificate::STATUS_SCHEDULED]);
+                $cert->update([
+                    'status' => Certificate::STATUS_SCHEDULED,
+                    'scheduled_signer_certificate_id' => $signer->id,
+                    'scheduled_appearance' => $placements,
+                    'scheduled_at' => $scheduledTime,
+                ]);
                 dispatch($job->onQueue('tte-signing'))->delay($delay);
                 return back()->with('success', 'Sertifikat dijadwalkan otomatis pada ' . $scheduledTime->format('d-m-Y H:i') . ' (Menunggu hari H kegiatan/penandatanganan).');
             }
@@ -216,17 +216,12 @@ class SigningController extends Controller
             
             $endDate = $c->event->end_date;
 
-            // Validasi: Abaikan jika tanggal sertifikat di masa lalu tapi sebelum event berakhir (logical error)
-            if ($targetDate && $endDate && $targetDate->lt($endDate)) {
-                $countError++;
-                continue;
-            }
+            // Validasi: Dulu ada pengecekan $targetDate < $endDate, sekarang dihapus agar fleksibel.
 
             $now = now();
             $scheduledTime = null;
-            if (($targetDate && $targetDate->isFuture()) || ($endDate && $endDate->isFuture())) {
-                $maxFuture = ($targetDate && $endDate) ? ($targetDate->gt($endDate) ? $targetDate : $endDate) : ($targetDate ?: $endDate);
-                $scheduledTime = $maxFuture->copy()->startOfDay()->addMinute();
+            if ($targetDate && $targetDate->isAfter(now()->addDay()->endOfDay())) {
+                $scheduledTime = $targetDate->copy()->startOfDay()->addMinute();
             }
 
             $job = new SignCertificateJob(
@@ -241,7 +236,12 @@ class SigningController extends Controller
             if ($scheduledTime) {
                 $delay = $now->diffInSeconds($scheduledTime, false);
                 if ($delay > 0) {
-                    $c->update(['status' => Certificate::STATUS_SCHEDULED]);
+                    $c->update([
+                        'status' => Certificate::STATUS_SCHEDULED,
+                        'scheduled_signer_certificate_id' => $signer->id,
+                        'scheduled_appearance' => $placements,
+                        'scheduled_at' => $scheduledTime,
+                    ]);
                     dispatch($job->onQueue('tte-signing'))->delay($delay);
                     $countScheduled++;
                     continue;
