@@ -146,17 +146,21 @@ class ParticipantController extends Controller
             // Proses ekstra kolom sebagai metadata (nilai, nilai praktek, dsb)
             $metadata = [];
             foreach ($extraHeaders as $index => $colName) {
-                // $index adalah 0..n dari array_slice, jadi offset di row adalah $index + 5
                 $val = trim($row[$index + 5] ?? '');
                 $cleanColName = strtolower(trim($colName ?? ''));
                 if ($cleanColName !== '') {
                     $metadata[$cleanColName] = $val;
+                    
+                    // Deteksi tanggal (jika header mengandung kata 'tanggal')
+                    if (str_contains($cleanColName, 'tanggal')) {
+                        $metadata['detected_date'] = $val;
+                    }
                 }
             }
 
             Participant::create([
                 'event_id' => $request->event_id,
-                'custom_date' => $metadata['tanggal_kunjungan'] ?? $metadata['custom_date'] ?? null,
+                'custom_date' => $metadata['detected_date'] ?? null,
                 'name' => $name,
                 'email' => $email ?: null,
                 'nik' => $nik ?: null,

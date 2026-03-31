@@ -12,14 +12,14 @@ class ParticipantsTemplateExport implements FromArray, WithHeadings
         return [
             'name',
             'email',
-            'nik',
+            'nik/nis/NIP',
             'institution',
             'status',
             'daerah',
             'jenjang',
             'peran',
             'keterangan',
-            'tanggal_kunjungan'
+            'tanggal_kunjungan/ Tanggal Kegiatan'
         ];
     }
 
@@ -27,7 +27,7 @@ class ParticipantsTemplateExport implements FromArray, WithHeadings
     {
         return [
             ['Budi Santoso', 'budi@email.com', '6401xxxxxxxxxxxx', 'SMPN 1 Samarinda', 'draft', 'Samarinda', 'SMP', 'Peserta', '-', '2026-03-08'],
-            ['Siti Aminah', 'siti@email.com', '6401xxxxxxxxxxxx', 'BPMP Kaltim', 'terbit', 'Balikpapan', 'SMA', 'Panitia', '-', '2026-03-09']
+            ['Siti Aminah', 'siti@email.com', '6401xxxxxxxxxxxx', 'SD N 001 Samarinda', 'draft', 'Balikpapan', 'SMA', 'Narasumber', '-', '2026-03-09']
         ];
     }
 }
