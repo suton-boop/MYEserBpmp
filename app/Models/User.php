@@ -52,6 +52,12 @@ class User extends Authenticatable
 
     public function hasPermission(string $permissionName): bool
     {
+        // 🚀 Super Admin Bypass
+        $superRoles = ['Super Admin', 'superadmin', 'admin_sistem'];
+        if (in_array($this->role?->name, $superRoles, true)) {
+            return true;
+        }
+
         $roleHas = $this->role
             ? $this->role->permissions()->where('name', $permissionName)->exists()
             : false;
