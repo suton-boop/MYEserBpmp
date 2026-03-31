@@ -54,6 +54,10 @@ class Certificate extends Model
         'generated_at',
         'signed_at',
         'sent_at',
+
+        'scheduled_signer_certificate_id',
+        'scheduled_appearance',
+        'scheduled_at',
     ];
 
     protected $casts = [
@@ -63,6 +67,8 @@ class Certificate extends Model
         'generated_at' => 'datetime',
         'signed_at' => 'datetime',
         'sent_at' => 'datetime',
+        'scheduled_at' => 'datetime',
+        'scheduled_appearance' => 'array',
     ];
 
     // Relations
@@ -79,6 +85,11 @@ class Certificate extends Model
     public function submittedBy()
     {
         return $this->belongsTo(User::class , 'submitted_by');
+    }
+
+    public function scheduledSigner()
+    {
+        return $this->belongsTo(SignerCertificate::class, 'scheduled_signer_certificate_id');
     }
 
     public function digitalSignature()

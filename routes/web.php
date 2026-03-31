@@ -105,6 +105,8 @@ Route::prefix('admin')
                 ->whereNumber('certificate')->name('download');
             Route::post('/{certificate}/revise', [CertificateFlowController::class , 'revise'])
                 ->whereNumber('certificate')->name('revise');
+            Route::post('/{certificate}/resubmit', [CertificateFlowController::class , 'resubmit'])
+                ->whereNumber('certificate')->name('resubmit');
         }
         );
 

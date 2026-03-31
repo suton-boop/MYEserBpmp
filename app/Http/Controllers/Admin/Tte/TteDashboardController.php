@@ -33,6 +33,10 @@ class TteDashboardController extends Controller
             ?SignerCertificate::query()->where('is_active', true)->count()
             : 0;
 
-        return view('admin.tte.dashboard', compact('signedToday', 'pendingApproved', 'activeSigners'));
+        $scheduledCount = Schema::hasTable('certificates')
+            ? Certificate::query()->where('status', Certificate::STATUS_SCHEDULED)->count()
+            : 0;
+
+        return view('admin.tte.dashboard', compact('signedToday', 'pendingApproved', 'activeSigners', 'scheduledCount'));
     }
 }

@@ -53,7 +53,7 @@
     </div>
 
     <!-- Signer Aktif -->
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden position-relative bg-white">
             <div class="card-body p-4 d-flex flex-column justify-content-center">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -69,6 +69,27 @@
                     <a href="{{ route('admin.tte.signers.index') }}" class="btn btn-sm btn-light border-secondary border-opacity-25 rounded-pill fw-semibold text-primary">Kelola Signer <i class="fa-solid fa-chevron-right ms-1" style="font-size: 10px;"></i></a>
                 </div>
                 <i class="fa-solid fa-shield-halved position-absolute text-success opacity-10" style="font-size: 8rem; right: -20px; bottom: -20px;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- TTE Terjadwal -->
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden position-relative bg-white">
+            <div class="card-body p-4 d-flex flex-column justify-content-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="bg-info text-white px-3 py-2 rounded-3 d-inline-flex justify-content-center align-items-center shadow-sm">
+                        <i class="fa-solid fa-calendar-check fs-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="display-5 fw-bolder mb-1 text-dark">{{ number_format($scheduledCount ?? 0) }}</h2>
+                    <h6 class="fw-semibold text-muted mb-0">TTE Terjadwal</h6>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ route('admin.tte.signing.index') }}?status=scheduled" class="btn btn-sm btn-light border-secondary border-opacity-25 rounded-pill fw-semibold text-info">Lihat Jadwal <i class="fa-solid fa-chevron-right ms-1" style="font-size: 10px;"></i></a>
+                </div>
+                <i class="fa-solid fa-clock position-absolute text-info opacity-10" style="font-size: 8rem; right: -20px; bottom: -20px;"></i>
             </div>
         </div>
     </div>
