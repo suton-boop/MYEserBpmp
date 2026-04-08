@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use App\Models\Certificate;
@@ -15,10 +14,6 @@ use Illuminate\Support\Facades\Log;
 class SignCertificateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    // JANGAN paksa sync
-    // public string $connection = 'database'; // optional (boleh kosong)
-    
 
     public int $tries = 1;
     public int $timeout = 120;
@@ -43,6 +38,12 @@ class SignCertificateJob implements ShouldQueue
         try {
             $certificate = Certificate::query()->findOrFail($this->certificateId);
 
+            // Jika sudah signed (misal diproses manual saat queue masih jalan), skip
+            if ($certificate->status === 'signed') {
+                Log::info('JOB_SKIPPED_ALREADY_SIGNED', ['cert_id' => $this->certificateId]);
+                return;
+            }
+
             $certificate->update(['status' => 'proses_tte']);
 
             $result = $tteService->signCertificate(
@@ -54,7 +55,6 @@ class SignCertificateJob implements ShouldQueue
                 appearance: $this->appearance
             );
 
-            // NOTE: pastikan kolom sesuai model DigitalSignature kamu
             DigitalSignature::query()->create([
                 'certificate_id'     => $this->certificateId,
                 'signer_certificate_id' => \App\Models\SignerCertificate::where('code', $this->signerCertCode)->first()?->id,
@@ -65,8 +65,6 @@ class SignCertificateJob implements ShouldQueue
                 'signed_at'          => now(),
                 'signed_ip'          => $this->ip,
                 'signed_user_agent'  => $this->userAgent,
-
-                // appearance (opsional)
                 'is_visible' => ($this->appearance['tte_visible'] ?? true),
                 'page' => (int)($this->appearance['page'] ?? 1),
                 'pos_x'    => (int)($this->appearance['x'] ?? 0),
@@ -75,7 +73,6 @@ class SignCertificateJob implements ShouldQueue
                 'height'    => (int)($this->appearance['h'] ?? 80),
             ]);
 
-            // status final: gunakan yang konsisten di app kamu
             $certificate->update([
                 'status'    => 'signed',
                 'signed_at' => now(),
@@ -93,11 +90,7 @@ class SignCertificateJob implements ShouldQueue
                 ->where('id', $this->certificateId)
                 ->update(['status' => 'gagal_tte']);
 
-            throw $e; // supaya masuk failed_jobs
+            throw $e;
         }
     }
 }
-
-
-
-

@@ -169,10 +169,9 @@
         @forelse(($certificates ?? collect()) as $c)
           <tr>
             <td class="text-center py-3">
-              @if($c->status !== 'scheduled')
-                <input class="form-check-input rowCheck shadow-sm" type="checkbox" value="{{ $c->id }}">
-              @else
-                <i class="fa-solid fa-clock text-warning" title="Dijadwalkan"></i>
+              <input class="form-check-input rowCheck shadow-sm" type="checkbox" value="{{ $c->id }}">
+              @if($c->status === 'scheduled')
+                <div class="x-small text-warning mt-1"><i class="fa-solid fa-clock"></i></div>
               @endif
             </td>
             <td class="py-3">
@@ -213,8 +212,8 @@
                     Dispatch Sign
                   </button>
                 @else
-                  <button type="button" class="btn btn-outline-warning btn-sm rounded-3 shadow-sm fw-semibold" disabled>
-                    Queued...
+                  <button type="button" class="btn btn-warning btn-sm rounded-3 shadow-sm btnSingleDispatch fw-semibold" data-id="{{ $c->id }}" title="Paksa proses TTE sekarang (Abaikan antrean)">
+                    Force Sign
                   </button>
                 @endif
               </div>

@@ -9,6 +9,9 @@
   </div>
   
   <div class="d-flex gap-2">
+      <form action="{{ route('admin.monitoring.processQueue') }}" method="GET" onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> Processing...';">
+          <button type="submit" class="btn btn-warning shadow-sm rounded-3 fw-bold"><i class="fa-solid fa-play me-1"></i> Jalankan Antrean (Process Now)</button>
+      </form>
       <form action="{{ route('admin.monitoring.retryFailed') }}" method="POST" onsubmit="return confirm('Mencoba ulang semua proses yang gagal?')">
           @csrf
           <button type="submit" class="btn btn-outline-primary shadow-sm rounded-3"><i class="fa-solid fa-rotate-right me-1"></i> Retry Failed Jobs</button>

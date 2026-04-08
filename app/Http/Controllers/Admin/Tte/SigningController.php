@@ -83,7 +83,7 @@ class SigningController extends Controller
         $cert = Certificate::query()->with(['event', 'participant'])->find((int)$id);
         if (!$cert)
             return back()->with('error', 'Sertifikat tidak ditemukan.');
-        if (!in_array(strtolower($cert->status), ['approved', 'final_generated', 'gagal_tte'], true))
+        if (!in_array(strtolower($cert->status), ['approved', 'final_generated', 'gagal_tte', 'scheduled'], true))
             return back()->with('error', 'Status tidak valid.');
 
         $signer = SignerCertificate::query()->where('id', $validated['signer_certificate_id'])->where('is_active', true)->first();
@@ -195,7 +195,7 @@ class SigningController extends Controller
             return back()->with('error', 'Pilih minimal 1 sertifikat (checkbox).');
 
         $certs = Certificate::query()->with(['event', 'participant'])->whereIn('id', $ids)
-            ->whereIn('status', ['approved', 'final_generated', 'gagal_tte', 'Gagal_tte'])
+            ->whereIn('status', ['approved', 'final_generated', 'gagal_tte', 'Gagal_tte', 'scheduled'])
             ->get();
         if ($certs->count() === 0)
             return back()->with('error', 'Tidak ada sertifikat valid untuk dispatch.');
