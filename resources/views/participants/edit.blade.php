@@ -61,7 +61,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">NIK / NISN (opsional)</label>
+        <label class="form-label">NPSN / NIK / NISN (opsional)</label>
         <input name="nik" class="form-control" value="{{ old('nik', $participant->nik) }}" placeholder="Contoh: 97455319">
       </div>
 
@@ -91,7 +91,7 @@
       </div>
 
       <div class="col-md-6">
-        <label class="form-label">Jurusan / Kompetensi Keahlian (opsional)</label>
+        <label class="form-label">Peran / Jurusan / Kompetensi Keahlian (opsional)</label>
         <input name="peran" class="form-control" value="{{ old('peran', $participant->peran) }}" placeholder="Contoh: TEKNIK KOMPUTER DAN JARINGAN">
       </div>
       

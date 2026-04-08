@@ -159,6 +159,11 @@ Route::prefix('admin')
 
                 Route::get('/permissions', [AdminPermissionController::class , 'index'])->name('permissions.index');
 
+                Route::prefix('settings')->name('settings.')->group(function () {
+                    Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
+                    Route::post('/', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+                });
+
                 Route::get('/events/{event}/download-signed', [AdminEventController::class , 'downloadSigned'])->name('events.downloadSigned');
                 Route::resource('events', AdminEventController::class)->except(['show']);
 

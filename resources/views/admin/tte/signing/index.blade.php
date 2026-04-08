@@ -120,6 +120,21 @@
              <i class="fa-solid fa-rotate-left me-1"></i> Reset Lokasi
          </button>
       </div>
+       
+       <div class="col-12 pt-3 mt-3">
+           <a class="btn btn-sm btn-light border text-muted fw-bold d-inline-flex align-items-center mb-2" data-bs-toggle="collapse" href="#collapseManualSchedule" role="button" aria-expanded="false" aria-controls="collapseManualSchedule">
+               <i class="fa-solid fa-chevron-down me-2"></i> Penjadwalan Kustom (Darurat / Pengaturan Lanjut)
+           </a>
+           <div class="collapse" id="collapseManualSchedule">
+             <div class="card card-body bg-light border-0 shadow-sm mt-1">
+                 <div class="input-group mb-2" style="max-width: 350px;">
+                   <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                   <input type="datetime-local" class="form-control" id="customScheduleDate" placeholder="Pilih Waktu">
+                 </div>
+                 <div class="text-muted small"><strong>Opsional:</strong> Isi kolom ini untuk mengantrekan TTE secara paksa pada jam/tanggal spesifik. Kosongkan untuk mengikuti aturan waktu otomatis/default.</div>
+             </div>
+           </div>
+       </div>
     </div>
   </div>
 </div>
@@ -236,6 +251,7 @@
     <input type="hidden" name="appearance_y" id="formY">
     <input type="hidden" name="appearance_w" id="formW">
     <input type="hidden" name="appearance_h" id="formH">
+    <input type="hidden" name="schedule_date" id="formScheduleDate">
     <div id="formCertificatesIds"></div>
     <div id="formPlacements"></div>
 </form>
@@ -286,6 +302,11 @@ document.addEventListener('DOMContentLoaded', () => {
         configSigner.classList.remove('is-invalid');
 
         formSigner.value = configSigner.value;
+        const configScheduleDate = document.getElementById('customScheduleDate');
+        const formScheduleDate = document.getElementById('formScheduleDate');
+        if (configScheduleDate && formScheduleDate) {
+            formScheduleDate.value = configScheduleDate.value;
+        }
         
         // Handle Multiple Placements
         formPlacements.innerHTML = '';

@@ -162,6 +162,14 @@ return [
     ],
 
     [
+        'title' => 'Pengaturan Umum',
+        'icon' => 'fa-solid fa-cogs',
+        'route' => 'admin.system.settings.index',
+        'active' => 'admin.system.settings.*',
+        'permission' => 'role-manage', // we restrict strictly via controller anyway, but use role-manage as proxy
+    ],
+
+    [
         'title' => 'Permissions',
         'icon' => 'fa-solid fa-lock',
         'route' => 'admin.system.permissions.index',

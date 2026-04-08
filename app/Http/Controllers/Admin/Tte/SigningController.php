@@ -77,6 +77,7 @@ class SigningController extends Controller
             'appearance_w' => ['nullable', 'integer', 'min:5', 'max:20000'],
             'appearance_h' => ['nullable', 'integer', 'min:5', 'max:20000'],
             'placements' => ['nullable', 'array'],
+            'schedule_date' => ['nullable', 'date'],
         ]);
 
         $cert = Certificate::query()->with(['event', 'participant'])->find((int)$id);
@@ -111,16 +112,27 @@ class SigningController extends Controller
         
         $endDate = $cert->event->end_date;
 
-        // 1. Validasi Logika: Dulu ada pengecekan $targetDate < $endDate, sekarang dihapus agar fleksibel.
+        $isManualSchedule = !empty($validated['schedule_date']);
+        $manualSchedule = $isManualSchedule ? \Carbon\Carbon::parse($validated['schedule_date']) : null;
+
+        // 1. Validasi Logika: Strict Date (Opsional)
+        if (!$isManualSchedule) {
+            $isStrict = \App\Models\Setting::getValue('strict_tte_date', false);
+            if ($isStrict) {
+                $nowDate = now()->startOfDay();
+                if ($targetDate && $targetDate->startOfDay()->isAfter($nowDate)) {
+                    return back()->with('error', 'Validasi ketat aktif: Sertifikat belum dapat di-TTE. Tanggal pada sertifikat ('.$targetDate->format('d/m/Y').') melebih hari ini.');
+                }
+            }
+        }
 
         // 2. Logic Antrian (Queue with Delay)
-        // Kapan paling cepat boleh di-sign? Hanya jika targetDate di masa depan.
         $now = now();
         $scheduledTime = null;
 
-        // Hanya jadwalkan otomatis jika tanggal sertifikat masih lebih dari 24 jam ke depan.
-        // Ini untuk mengakomodasi perbedaan timezone server (UTC) dengan user (Jakarta).
-        if ($targetDate && $targetDate->isAfter(now()->addDay()->endOfDay())) {
+        if ($isManualSchedule && $manualSchedule->isAfter($now)) {
+            $scheduledTime = $manualSchedule;
+        } elseif (!$isManualSchedule && $targetDate && $targetDate->isAfter(now()->addDay()->endOfDay())) {
             $scheduledTime = $targetDate->copy()->startOfDay()->addMinute(); // 00:01
         }
 
@@ -169,6 +181,7 @@ class SigningController extends Controller
             'q' => ['nullable', 'string', 'max:100'],
             'event_id' => ['nullable'],
             'placements' => ['nullable', 'array'],
+            'schedule_date' => ['nullable', 'date'],
         ]);
 
         $signer = SignerCertificate::query()->where('id', $validated['signer_certificate_id'])->where('is_active', true)->first();
@@ -216,11 +229,26 @@ class SigningController extends Controller
             
             $endDate = $c->event->end_date;
 
-            // Validasi: Dulu ada pengecekan $targetDate < $endDate, sekarang dihapus agar fleksibel.
+            $isManualSchedule = !empty($validated['schedule_date']);
+            $manualSchedule = $isManualSchedule ? \Carbon\Carbon::parse($validated['schedule_date']) : null;
+
+            // Validasi: Strict Date (Opsional)
+            if (!$isManualSchedule) {
+                $isStrict = \App\Models\Setting::getValue('strict_tte_date', false);
+                if ($isStrict) {
+                    $nowDate = now()->startOfDay();
+                    if ($targetDate && $targetDate->startOfDay()->isAfter($nowDate)) {
+                        $countError++;
+                        continue;
+                    }
+                }
+            }
 
             $now = now();
             $scheduledTime = null;
-            if ($targetDate && $targetDate->isAfter(now()->addDay()->endOfDay())) {
+            if ($isManualSchedule && $manualSchedule->isAfter($now)) {
+                $scheduledTime = $manualSchedule;
+            } elseif (!$isManualSchedule && $targetDate && $targetDate->isAfter(now()->addDay()->endOfDay())) {
                 $scheduledTime = $targetDate->copy()->startOfDay()->addMinute();
             }
 
