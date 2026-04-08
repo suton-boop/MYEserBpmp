@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('certificates', function (Blueprint $table) {
             if (!Schema::hasColumn('certificates', 'scheduled_signer_certificate_id')) {
-                $table->foreignId('scheduled_signer_certificate_id')->nullable()->constrained('signer_certificates')->nullOnDelete();
+                $table->foreignUuid('scheduled_signer_certificate_id')->nullable()->constrained('signer_certificates')->nullOnDelete();
             }
             if (!Schema::hasColumn('certificates', 'scheduled_appearance')) {
                 $table->json('scheduled_appearance')->nullable();
