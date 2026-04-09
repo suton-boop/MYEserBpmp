@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('tte:process-scheduled')->dailyAt('00:01');
+Schedule::command('tte:process-scheduled')->everyMinute();

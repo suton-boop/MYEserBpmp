@@ -34,7 +34,7 @@ class ProcessScheduledTte extends Command
             ->get();
 
         if ($certificates->isEmpty()) {
-            $this->info('No matching certificates found.');
+            $this->comment('No matching certificates found (Status: scheduled, Time: <= ' . $now->toDateTimeString() . ').');
             return;
         }
 
