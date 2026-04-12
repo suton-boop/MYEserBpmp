@@ -37,7 +37,7 @@
         @php $st = old('status', $event->status); @endphp
         <select name="status" class="form-select" required>
           @php
-            $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+            $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem', 'pimpinan', 'kasubag', 'kasubbag', 'kepala']);
           @endphp
           @if($event->status === 'proposed')
             <option value="proposed" @selected($st==='proposed')>Usulan (Proposed)</option>

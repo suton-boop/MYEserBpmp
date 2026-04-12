@@ -148,7 +148,7 @@
             @if(!in_array(strtolower(auth()->user()->role?->name ?? ''), ['operator']))
             <td>
               <div class="d-flex gap-2">
-                @if(in_array(strtolower(auth()->user()->role?->name ?? ''), ['admin', 'superadmin', 'super admin', 'admin_sistem']))
+                @if(in_array(strtolower(auth()->user()->role?->name ?? ''), ['admin', 'superadmin', 'super admin', 'admin_sistem', 'pimpinan', 'kasubag', 'kasubbag', 'kepala']))
                   @if($st === 'proposed')
                   <form action="{{ route('admin.system.events.approve', $e->id) }}" method="POST" class="d-inline">
                     @csrf

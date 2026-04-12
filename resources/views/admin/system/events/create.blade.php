@@ -44,7 +44,7 @@
         <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
         <select name="status" class="form-select" required>
           @php
-            $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+            $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem', 'pimpinan', 'kasubag', 'kasubbag', 'kepala']);
           @endphp
           @if(!$isSuper)
             <option value="proposed" @selected(old('status', 'proposed') === 'proposed')>Usulan (Proposed)</option>

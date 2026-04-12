@@ -87,7 +87,7 @@ class EventController extends Controller
         $data['is_date_per_participant'] = $request->boolean('is_date_per_participant');
 
         // Set status to proposed by default for non-super admins if they try to set it to active
-        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem', 'pimpinan', 'kasubag', 'kasubbag', 'kepala']);
         if (!$isSuper && $data['status'] === Event::STATUS_ACTIVE) {
             $data['status'] = Event::STATUS_PROPOSED;
         }
@@ -146,7 +146,7 @@ class EventController extends Controller
         $data['is_date_per_participant'] = $request->boolean('is_date_per_participant');
 
         // Restrict status change to active/closed for non-super admins if it was proposed
-        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem', 'pimpinan', 'kasubag', 'kasubbag', 'kepala']);
         if (!$isSuper && ($event->status === Event::STATUS_PROPOSED || $event->status === Event::STATUS_DRAFT) && $data['status'] === Event::STATUS_ACTIVE) {
             $data['status'] = $event->status; // Keep old status
             $warning = ' Perubahan status ke Aktif membutuhkan persetujuan pimpinan.';
@@ -216,7 +216,7 @@ class EventController extends Controller
     }
     public function approve(Event $event)
     {
-        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem', 'pimpinan', 'kasubag', 'kasubbag', 'kepala']);
         if (!$isSuper) {
             abort(403, 'Hanya pimpinan yang dapat menyetujui event.');
         }
