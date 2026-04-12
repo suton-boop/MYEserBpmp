@@ -27,7 +27,7 @@ class ParticipantController extends Controller
 
         $sortBy = $request->query('sort', 'latest');
 
-        $events = Event::orderBy('name')->get(['id', 'name']);
+        $events = Event::whereIn('status', [Event::STATUS_ACTIVE, Event::STATUS_CLOSED])->orderBy('name')->get(['id', 'name']);
 
         // Subquery: ambil 1 sertifikat terakhir per peserta
         // kalau event dipilih => sertifikat terakhir untuk event itu
