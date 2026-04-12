@@ -28,7 +28,7 @@ class EventController extends Controller
                 }
                 );
             })
-            ->when(in_array($status, ['draft', 'active', 'closed'], true), function ($query) use ($status) {
+            ->when(in_array($status, [Event::STATUS_PROPOSED, Event::STATUS_DRAFT, Event::STATUS_ACTIVE, Event::STATUS_CLOSED], true), function ($query) use ($status) {
             $query->where('status', $status);
         })
             ->latest()
@@ -61,7 +61,7 @@ class EventController extends Controller
             'location' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'status' => ['required', 'in:draft,active,closed'],
+            'status' => ['required', 'in:proposed,draft,active,closed'],
             'description' => ['required', 'string'],
 
             // pilih template
@@ -86,11 +86,17 @@ class EventController extends Controller
 
         $data['is_date_per_participant'] = $request->boolean('is_date_per_participant');
 
+        // Set status to proposed by default for non-super admins if they try to set it to active
+        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+        if (!$isSuper && $data['status'] === Event::STATUS_ACTIVE) {
+            $data['status'] = Event::STATUS_PROPOSED;
+        }
+
         Event::create($data);
 
         return redirect()
             ->route('admin.system.events.index')
-            ->with('success', 'Event berhasil ditambahkan.');
+            ->with('success', 'Event berhasil ditambahkan.' . (!$isSuper ? ' Menunggu persetujuan pimpinan.' : ''));
     }
 
     public function edit(Event $event)
@@ -116,7 +122,7 @@ class EventController extends Controller
             'location' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'status' => ['required', 'in:draft,active,closed'],
+            'status' => ['required', 'in:proposed,draft,active,closed'],
             'description' => ['required', 'string'],
 
             'certificate_template_id' => ['nullable', 'integer', 'exists:certificate_templates,id'],
@@ -139,11 +145,18 @@ class EventController extends Controller
 
         $data['is_date_per_participant'] = $request->boolean('is_date_per_participant');
 
+        // Restrict status change to active/closed for non-super admins if it was proposed
+        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+        if (!$isSuper && ($event->status === Event::STATUS_PROPOSED || $event->status === Event::STATUS_DRAFT) && $data['status'] === Event::STATUS_ACTIVE) {
+            $data['status'] = $event->status; // Keep old status
+            $warning = ' Perubahan status ke Aktif membutuhkan persetujuan pimpinan.';
+        }
+
         $event->update($data);
 
         return redirect()
             ->route('admin.system.events.index')
-            ->with('success', 'Event berhasil diperbarui.');
+            ->with('success', 'Event berhasil diperbarui.' . ($warning ?? ''));
     }
 
     public function destroy(Event $event)
@@ -200,5 +213,16 @@ class EventController extends Controller
         }
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+    public function approve(Event $event)
+    {
+        $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+        if (!$isSuper) {
+            abort(403, 'Hanya pimpinan yang dapat menyetujui event.');
+        }
+
+        $event->update(['status' => Event::STATUS_ACTIVE]);
+
+        return back()->with('success', 'Event "' . $event->name . '" telah disetujui dan aktif.');
     }
 }

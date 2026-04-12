@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Event extends Model
 {
     protected $table = 'events';
+    
+    const STATUS_PROPOSED = 'proposed';
+    const STATUS_DRAFT    = 'draft';
+    const STATUS_ACTIVE   = 'active';
+    const STATUS_CLOSED   = 'closed';
 
     protected $fillable = [
         'name', 'location', 'start_date', 'end_date', 'description',

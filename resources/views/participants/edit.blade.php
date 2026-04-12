@@ -84,7 +84,7 @@
         <label class="form-label">Jenjang <span class="text-danger">*</span></label>
         <select name="jenjang" class="form-select" required>
           <option value="">-- Pilih Jenjang --</option>
-          @foreach(['PAUD-TK', 'SD', 'SMP', 'SMA', 'SMK', 'PNF', 'Umum'] as $j)
+          @foreach(['PAUD-TK', 'SD', 'SMP', 'SMA', 'SMK', 'PNF', 'UPT', 'Umum'] as $j)
             <option value="{{ $j }}" @selected(old('jenjang', $participant->jenjang) === $j)>{{ $j }}</option>
           @endforeach
         </select>

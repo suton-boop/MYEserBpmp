@@ -43,7 +43,14 @@
       <div class="col-md-4">
         <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
         <select name="status" class="form-select" required>
-          <option value="active" @selected(old('status', 'active') === 'active')>Aktif (Active)</option>
+          @php
+            $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+          @endphp
+          @if(!$isSuper)
+            <option value="proposed" @selected(old('status', 'proposed') === 'proposed')>Usulan (Proposed)</option>
+          @else
+            <option value="active" @selected(old('status', 'active') === 'active')>Aktif (Active)</option>
+          @endif
           <option value="draft" @selected(old('status') === 'draft')>Draf (Draft)</option>
           <option value="closed" @selected(old('status') === 'closed')>Selesai (Closed)</option>
         </select>

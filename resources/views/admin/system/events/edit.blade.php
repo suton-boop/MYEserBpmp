@@ -36,9 +36,21 @@
         <label class="form-label">Status <span class="text-danger">*</span></label>
         @php $st = old('status', $event->status); @endphp
         <select name="status" class="form-select" required>
-          <option value="draft" @selected($st==='draft')>draft</option>
-          <option value="active" @selected($st==='active')>active</option>
-          <option value="closed" @selected($st==='closed')>closed</option>
+          @php
+            $isSuper = in_array(strtolower(auth()->user()->role?->name ?? ''), ['superadmin', 'super admin', 'admin_sistem']);
+          @endphp
+          @if($event->status === 'proposed')
+            <option value="proposed" @selected($st==='proposed')>Usulan (Proposed)</option>
+          @endif
+          @if($isSuper)
+            <option value="active" @selected($st==='active')>Aktif (Active)</option>
+          @else
+            @if($event->status === 'active')
+               <option value="active" @selected($st==='active')>Aktif (Active)</option>
+            @endif
+          @endif
+          <option value="draft" @selected($st==='draft')>Draf (Draft)</option>
+          <option value="closed" @selected($st==='closed')>Selesai (Closed)</option>
         </select>
       </div>
 

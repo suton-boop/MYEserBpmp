@@ -99,7 +99,7 @@ class ParticipantController extends Controller
 
     public function importForm()
     {
-        $events = Event::orderBy('name')->get(['id', 'name']);
+        $events = Event::where('status', Event::STATUS_ACTIVE)->orderBy('name')->get(['id', 'name']);
         return view('participants.import', compact('events'));
     }
 
@@ -182,7 +182,7 @@ class ParticipantController extends Controller
 
     public function create()
     {
-        $events = Event::orderBy('name')->get(['id', 'name']);
+        $events = Event::where('status', Event::STATUS_ACTIVE)->orderBy('name')->get(['id', 'name']);
         $eventId = request('event_id');
         return view('participants.create', compact('events', 'eventId'));
     }

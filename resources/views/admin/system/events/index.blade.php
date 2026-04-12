@@ -53,6 +53,7 @@
         <label class="form-label small text-muted mb-1">Status</label>
         <select name="status" class="form-select">
           <option value="">-- Semua Status --</option>
+          <option value="proposed" @selected($status==='proposed')>Proposed</option>
           <option value="draft"  @selected($status==='draft')>Draft</option>
           <option value="active" @selected($status==='active')>Active</option>
           <option value="closed" @selected($status==='closed')>Closed</option>
@@ -94,17 +95,19 @@
             $st = $e->status ?? 'draft';
 
             $badge = match($st) {
-              'active' => 'bg-success',
-              'closed' => 'bg-secondary',
-              'draft'  => 'bg-warning text-dark',
-              default  => 'bg-light text-dark',
+              'active'   => 'bg-success',
+              'closed'   => 'bg-secondary',
+              'proposed' => 'bg-info text-dark',
+              'draft'    => 'bg-warning text-dark',
+              default    => 'bg-light text-dark',
             };
 
             $label = match($st) {
-              'active' => 'Active',
-              'closed' => 'Closed',
-              'draft'  => 'Draft',
-              default  => ucfirst((string)$st),
+              'active'   => 'Active',
+              'closed'   => 'Closed',
+              'proposed' => 'Proposed',
+              'draft'    => 'Draft',
+              default    => ucfirst((string)$st),
             };
 
             $start = $e->start_date?->format('d M Y');
@@ -146,13 +149,22 @@
             <td>
               <div class="d-flex gap-2">
                 @if(in_array(strtolower(auth()->user()->role?->name ?? ''), ['admin', 'superadmin', 'super admin', 'admin_sistem']))
-                <a
-                  href="{{ route('admin.system.events.downloadSigned', $e->id) }}"
-                  class="btn btn-success btn-sm rounded-3"
-                  title="Download Sertifikat TTE"
-                >
-                  <i class="fa-solid fa-file-pdf"></i>
-                </a>
+                  @if($st === 'proposed')
+                  <form action="{{ route('admin.system.events.approve', $e->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button class="btn btn-primary btn-sm rounded-3" title="Setujui Event" type="submit" onclick="return confirm('Setujui event ini agar aktif?')">
+                      <i class="fa-solid fa-check-double"></i> Setujui
+                    </button>
+                  </form>
+                  @endif
+
+                  <a
+                    href="{{ route('admin.system.events.downloadSigned', $e->id) }}"
+                    class="btn btn-success btn-sm rounded-3"
+                    title="Download Sertifikat TTE"
+                  >
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </a>
                 @endif
 
                 <a

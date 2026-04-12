@@ -165,6 +165,7 @@ Route::prefix('admin')
                 });
 
                 Route::get('/events/{event}/download-signed', [AdminEventController::class , 'downloadSigned'])->name('events.downloadSigned');
+                Route::post('/events/{event}/approve', [AdminEventController::class , 'approve'])->name('events.approve');
                 Route::resource('events', AdminEventController::class)->except(['show']);
 
                 Route::prefix('approvals')->name('approvals.')->group(function () {
