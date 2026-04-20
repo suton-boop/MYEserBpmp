@@ -13,6 +13,9 @@
                         <h2 class="fw-bold mb-2">Selamat Datang, {{ auth()->user()->name }} 👋</h2>
                         <p class="mb-4" style="font-size: 1.1rem; opacity: 0.9;">Pantau aktivitas sertifikat, status penandatanganan, dan kelola event BPMP Prov Kaltim secara real-time.</p>
                         <a href="{{ route('admin.certificates.index') }}" class="btn btn-light rounded-pill px-4 py-2 fw-semibold shadow-sm text-primary">Lihat Sertifikat</a>
+                        <a href="{{ route('admin.system.documentation.pdf') }}" class="btn btn-outline-light rounded-pill px-4 py-2 fw-semibold shadow-sm ms-2">
+                            <i class="fa-solid fa-file-pdf me-1"></i> Dokumentasi PDF
+                        </a>
                     </div>
                     <!-- Decorative Element -->
                     <i class="fa-solid fa-award position-absolute" style="font-size: 15rem; right: -20px; bottom: -40px; opacity: 0.2; transform: rotate(-15deg);"></i>

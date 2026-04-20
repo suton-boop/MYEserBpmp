@@ -176,6 +176,9 @@ Route::prefix('admin')
                     Route::post('/reject-all', [ApprovalController::class , 'rejectAll'])->name('rejectAll');
                 }
                 );
+
+                // Documentation PDF
+                Route::get('/documentation/pdf', [\App\Http\Controllers\Admin\DocumentationController::class, 'downloadPdf'])->name('documentation.pdf');
             }
             );
 
