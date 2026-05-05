@@ -367,7 +367,10 @@ class CertificateController extends Controller
 
         return response()->file(Storage::disk('public')->path($pdfPath), [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="sertifikat.pdf"'
+            'Content-Disposition' => 'inline; filename="sertifikat.pdf"',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 
