@@ -21,8 +21,9 @@ class SettingController extends Controller
         }
 
         $strictTteDate = Setting::getValue('strict_tte_date', false);
+        $reuseDeletedNumbers = Setting::getValue('reuse_deleted_numbers', false);
 
-        return view('admin.system.settings.index', compact('strictTteDate'));
+        return view('admin.system.settings.index', compact('strictTteDate', 'reuseDeletedNumbers'));
     }
 
     public function update(Request $request)
@@ -32,13 +33,22 @@ class SettingController extends Controller
         }
 
         $request->validate([
-            'strict_tte_date' => 'nullable|boolean'
+            'strict_tte_date' => 'nullable|boolean',
+            'reuse_deleted_numbers' => 'nullable|boolean'
         ]);
 
         Setting::updateOrCreate(
             ['key' => 'strict_tte_date'],
             [
                 'value' => $request->has('strict_tte_date') ? '1' : '0',
+                'type' => 'boolean'
+            ]
+        );
+
+        Setting::updateOrCreate(
+            ['key' => 'reuse_deleted_numbers'],
+            [
+                'value' => $request->has('reuse_deleted_numbers') ? '1' : '0',
                 'type' => 'boolean'
             ]
         );

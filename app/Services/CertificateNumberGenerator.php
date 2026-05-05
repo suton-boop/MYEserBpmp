@@ -10,13 +10,33 @@ class CertificateNumberGenerator
     public static function generate(int $year): array
     {
         return DB::transaction(function () use ($year) {
+            $reuseDeleted = \App\Models\Setting::getValue('reuse_deleted_numbers', false);
+            $nextSeq = null;
 
-            // Ambil sequence terakhir di tahun tersebut
-            $lastSeq = Certificate::where('year', $year)
-                ->lockForUpdate()
-                ->max('sequence');
+            if ($reuseDeleted) {
+                $existingSeqs = Certificate::where('year', $year)
+                    ->lockForUpdate()
+                    ->pluck('sequence')
+                    ->toArray();
 
-            $nextSeq = ($lastSeq ?? 0) + 1;
+                $maxSeq = empty($existingSeqs) ? 0 : max($existingSeqs);
+
+                // Find the first gap in the sequences
+                for ($i = 1; $i <= $maxSeq; $i++) {
+                    if (!in_array($i, $existingSeqs)) {
+                        $nextSeq = $i;
+                        break;
+                    }
+                }
+            }
+
+            if ($nextSeq === null) {
+                // Default behavior
+                $lastSeq = Certificate::where('year', $year)
+                    ->lockForUpdate()
+                    ->max('sequence');
+                $nextSeq = ($lastSeq ?? 0) + 1;
+            }
 
             $prefix = str_pad((string)$nextSeq, 4, '0', STR_PAD_LEFT);
 

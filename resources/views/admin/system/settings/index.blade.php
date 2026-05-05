@@ -37,6 +37,23 @@
                             (Tanggal hari ini harus &ge; Tanggal jadwal sertifikat). Menonaktifkan fitur ini akan memperbolehkan sertifikat di-TTE mendahului/sebelum acara.
                         </div>
                     </div>
+                    
+                    <hr class="text-muted opacity-25">
+
+                    <h5 class="fw-bold text-dark mb-4">Pengaturan Generator Nomor</h5>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch fs-5 mb-1">
+                            <input class="form-check-input" type="checkbox" role="switch" id="reuseDeletedNumbers" name="reuse_deleted_numbers" value="1" {{ $reuseDeletedNumbers ? 'checked' : '' }}>
+                            <label class="form-check-label fw-semibold" for="reuseDeletedNumbers">
+                                Daur Ulang Nomor Urut Sertifikat
+                            </label>
+                        </div>
+                        <div class="form-text ms-1 mt-0" style="max-width: 600px;">
+                            Jika diaktifkan, sistem akan mencari dan menggunakan kembali nomor urut sertifikat yang kosong 
+                            (misalnya karena sertifikat sebelumnya dihapus akibat duplikasi). Jika dinonaktifkan, nomor urut akan selalu berlanjut dari nomor terakhir.
+                        </div>
+                    </div>
 
                     <hr class="text-muted opacity-25">
 
