@@ -114,6 +114,37 @@
                                 </div>
                             @endif
                         </div>
+
+                        {{-- PAGE 2 BACKGROUND INFO --}}
+                        <div class="mt-4">
+                            <label class="text-muted small fw-bold text-uppercase ls-1 d-block mb-2">Background Halaman 2</label>
+                            @if($template->page_2_background_path)
+                                @php
+                                    $bg2Url = route('admin.system.templates.preview', $template->id) . '?page=2';
+                                    $ext2 = strtolower(pathinfo($template->page_2_background_path, PATHINFO_EXTENSION));
+                                @endphp
+                                <div class="p-3 border rounded-4 bg-white shadow-sm">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-info bg-opacity-10 text-info rounded-3 p-2 me-3">
+                                            <i class="fa-solid fa-file-image fs-4"></i>
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <div class="text-dark fw-semibold text-truncate small">{{ basename($template->page_2_background_path) }}</div>
+                                            <div class="text-muted x-small uppercase fw-bold ls-1">{{ strtoupper($ext2) }} File</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ $bg2Url }}" target="_blank" class="btn btn-soft-info btn-sm rounded-pill fw-bold py-2" style="background-color: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+                                            <i class="fa-solid fa-eye me-1"></i> Lihat Halaman 2
+                                        </a>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-secondary border-0 rounded-4 px-3 py-2 mt-1 small">
+                                    <i class="fa-solid fa-circle-info me-2"></i> Tidak ada halaman 2.
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,8 +178,30 @@
                         @else
                             <div class="text-center py-5 bg-white rounded-4 border">
                                 <i class="fa-solid fa-mountain-sun text-muted opacity-25 mb-3" style="font-size: 5rem;"></i>
-                                <h5 class="text-muted fw-bold">Gambar Tidak Tersedia</h5>
+                                <h5 class="text-muted fw-bold">Gambar Utama Tidak Tersedia</h5>
                                 <p class="text-muted small">Silakan upload background di menu edit untuk melihat preview.</p>
+                            </div>
+                        @endif
+
+                        {{-- PREVIEW HALAMAN 2 --}}
+                        @if($template->page_2_background_path)
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-3"><i class="fa-solid fa-image me-2"></i>Preview Halaman 2</h6>
+                                <div class="bg-white p-2 rounded-4 shadow-sm border">
+                                    @if(in_array($ext2 ?? '', ['png','jpg','jpeg','webp']))
+                                        <div class="preview-container position-relative overflow-hidden rounded-3">
+                                            <img src="{{ $bg2Url ?? '' }}" class="img-fluid d-block mx-auto" alt="Background Halaman 2">
+                                        </div>
+                                    @elseif(($ext2 ?? '') === 'pdf')
+                                        <iframe src="{{ $bg2Url ?? '' }}" style="width:100%; height:520px;" class="border-0 rounded-3"></iframe>
+                                    @else
+                                        <div class="p-5 text-center">
+                                            <i class="fa-solid fa-file-circle-question text-muted mb-3" style="font-size: 4rem;"></i>
+                                            <h6 class="text-muted">Format tidak mendukung preview langsung.</h6>
+                                            <a href="{{ $bg2Url ?? '' }}" target="_blank" class="btn btn-info rounded-pill px-4 mt-2 text-white">Buka File</a>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
