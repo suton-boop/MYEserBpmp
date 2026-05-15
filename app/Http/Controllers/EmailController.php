@@ -42,13 +42,30 @@ class EmailController extends Controller
 
         // Batasi maksimal 200 email per klik
         $toProcess = array_slice($ids, 0, 200);
+        
+        $certificates = Certificate::with('participant')->whereIn('id', $toProcess)->get();
 
-        Certificate::whereIn('id', $toProcess)->update([
-            'status' => Certificate::STATUS_SENT,
-            'sent_at' => now(),
-        ]);
+        $dispatched = 0;
+        $invalidEmails = 0;
 
-        $msg = count($toProcess) . ' Sertifikat masuk antrean pengiriman.';
+        foreach ($certificates as $cert) {
+            $email = $cert->participant->email;
+            if (!$email) continue;
+            
+            // Cek validitas format email
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $invalidEmails++;
+                continue;
+            }
+            
+            \App\Jobs\SendCertificateEmailJob::dispatch($cert);
+            $dispatched++;
+        }
+
+        $msg = $dispatched . ' Sertifikat masuk antrean pengiriman.';
+        if ($invalidEmails > 0) {
+            $msg .= ' (' . $invalidEmails . ' email dilewati karena format tidak valid).';
+        }
         if (count($ids) > 200) {
             $msg .= ' (Sisa ' . (count($ids) - 200) . ' data diproses pada batch berikutnya).';
         }
