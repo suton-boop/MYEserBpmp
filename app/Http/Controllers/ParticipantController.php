@@ -137,6 +137,7 @@ class ParticipantController extends Controller
         $extraHeaders = array_slice($header, 5);
 
         $inserted = 0;
+        $skipped = 0;
 
         foreach ($data as $row) {
             // Kolom wajib dasar: name, email, nik, institution, status
@@ -151,6 +152,24 @@ class ParticipantController extends Controller
 
             if (!$name)
                 continue;
+
+            // ✅ CEK DUPLIKAT (Cerdas: NIK Utama, atau Nama+Email jika NIK kosong)
+            $isDuplicate = Participant::where('event_id', $request->event_id)
+                ->where(function ($q) use ($nik, $email, $name) {
+                    if ($nik) {
+                        // Jika ada NIK, maka NIK harus unik di event tersebut
+                        $q->where('nik', $nik);
+                    } elseif ($email && $name) {
+                        // Jika NIK kosong, maka kombinasi Nama + Email harus unik
+                        $q->where('name', $name)->where('email', $email);
+                    }
+                })
+                ->exists();
+
+            if ($isDuplicate) {
+                $skipped++;
+                continue;
+            }
 
             // Proses ekstra kolom sebagai metadata (nilai, nilai praktek, dsb)
             $metadata = [];
@@ -185,8 +204,13 @@ class ParticipantController extends Controller
             $inserted++;
         }
 
+        $msg = "Import $inserted peserta berhasil diselesaikan.";
+        if ($skipped > 0) {
+            $msg .= " ($skipped data duplikat dilewati).";
+        }
+
         return redirect()->route('admin.participants.index', ['event_id' => $request->event_id])
-            ->with('success', "Import $inserted peserta dari Excel/CSV berhasil diselesaikan.");
+            ->with('success', $msg);
     }
 
     public function create()
@@ -227,6 +251,23 @@ class ParticipantController extends Controller
         }
         else {
             $validated['metadata'] = null;
+        }
+
+        // ✅ CEK DUPLIKAT MANUAL (Cerdas: NIK Utama, atau Nama+Email jika NIK kosong)
+        $isDuplicate = Participant::where('event_id', $validated['event_id'])
+            ->where(function ($q) use ($validated) {
+                if (!empty($validated['nik'])) {
+                    $q->where('nik', $validated['nik']);
+                }
+                elseif (!empty($validated['email']) && !empty($validated['name'])) {
+                    $q->where('name', $validated['name'])
+                        ->where('email', $validated['email']);
+                }
+            })
+            ->exists();
+
+        if ($isDuplicate) {
+            return back()->withInput()->with('error', 'Peserta dengan NIK atau Email tersebut sudah terdaftar di event ini.');
         }
 
         Participant::create($validated);
