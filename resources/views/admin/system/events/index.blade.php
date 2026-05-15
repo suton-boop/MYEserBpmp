@@ -175,17 +175,34 @@
                   <i class="fa-solid fa-pen-to-square"></i>
                 </a>
 
-                <form
-                  action="{{ route('admin.system.events.destroy', $e->id) }}"
-                  method="POST"
-                  onsubmit="return confirm('Yakin hapus event ini?')"
-                >
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-danger btn-sm rounded-3" title="Hapus" type="submit">
-                    <i class="fa-solid fa-trash"></i>
+                @php
+                  $canDelete = true;
+                  $isFullAdmin = auth()->user()->isFullAdmin();
+                  if (!$isFullAdmin) {
+                      $hasSigned = $e->certificates()->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, \App\Models\Certificate::STATUS_SENT])->exists();
+                      if ($hasSigned) {
+                          $canDelete = false;
+                      }
+                  }
+                @endphp
+
+                @if($canDelete)
+                  <form
+                    action="{{ route('admin.system.events.destroy', $e->id) }}"
+                    method="POST"
+                    onsubmit="return confirm('Yakin hapus event ini? Semua data peserta di dalamnya akan terhapus!')"
+                  >
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-sm rounded-3" title="Hapus" type="submit">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                @else
+                  <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="Tidak bisa dihapus: Sudah ada sertifikat TTE">
+                    <i class="fa-solid fa-lock"></i>
                   </button>
-                </form>
+                @endif
               </div>
             </td>
             @endif

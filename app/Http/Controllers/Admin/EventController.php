@@ -161,6 +161,13 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        if (!auth()->user()->isFullAdmin()) {
+            $hasSigned = $event->certificates()->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, \App\Models\Certificate::STATUS_SENT])->exists();
+            if ($hasSigned) {
+                return back()->with('error', 'Event tidak dapat dihapus karena sudah memiliki sertifikat yang diterbitkan (TTE).');
+            }
+        }
+
         $event->delete();
 
         return redirect()
