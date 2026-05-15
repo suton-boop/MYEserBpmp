@@ -278,14 +278,25 @@ class ParticipantController extends Controller
 
     public function edit(Participant $participant)
     {
+        // Cek apakah sertifikat sudah TTE (Signed/Sent)
+        $hasSignedCert = $participant->certificates()->whereIn('status', ['signed', 'sent'])->exists();
+        if ($hasSignedCert && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Peserta ini sudah memiliki sertifikat bertanda tangan (TTE). Perubahan hanya bisa dilakukan oleh Admin atau Super Admin.');
+        }
+
+        // Cek apakah event sudah selesai
+        if ($participant->event->status === \App\Models\Event::STATUS_CLOSED && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Event ini sudah selesai/ditutup. Data peserta tidak bisa diubah oleh Operator/Ketua GM.');
+        }
+
         $events = Event::orderBy('name')->get(['id', 'name']);
         return view('participants.edit', compact('participant', 'events'));
     }
 
     public function update(Request $request, Participant $participant)
     {
-        // Cek apakah sertifikat sudah TTE (Signed)
-        $hasSignedCert = $participant->certificates()->where('status', 'signed')->exists();
+        // Cek apakah sertifikat sudah TTE (Signed/Sent)
+        $hasSignedCert = $participant->certificates()->whereIn('status', ['signed', 'sent'])->exists();
         if ($hasSignedCert && !auth()->user()->isFullAdmin()) {
             return back()->with('error', 'Peserta ini sudah memiliki sertifikat bertanda tangan (TTE). Perubahan hanya bisa dilakukan oleh Admin atau Super Admin.');
         }
@@ -325,8 +336,8 @@ class ParticipantController extends Controller
 
     public function destroy(Participant $participant)
     {
-        // Cek apakah sertifikat sudah TTE (Signed)
-        $hasSignedCert = $participant->certificates()->where('status', 'signed')->exists();
+        // Cek apakah sertifikat sudah TTE (Signed/Sent)
+        $hasSignedCert = $participant->certificates()->whereIn('status', ['signed', 'sent'])->exists();
         if ($hasSignedCert && !auth()->user()->isFullAdmin()) {
             return back()->with('error', 'Peserta ini sudah memiliki sertifikat bertanda tangan (TTE). Penghapusan hanya bisa dilakukan oleh Admin atau Super Admin.');
         }

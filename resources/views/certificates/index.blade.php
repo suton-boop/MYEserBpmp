@@ -45,6 +45,14 @@
             <i class="fa-solid fa-file-pdf me-1 small"></i> Generate PDF (Approved)
           </button>
         </form>
+
+        <form method="POST" action="{{ route('admin.certificates.sendEmailAll') }}">
+          @csrf
+          <input type="hidden" name="event_id" value="{{ $eventId }}">
+          <button class="btn btn-soft-primary rounded-3 btn-sm px-3 py-2" {{ $eventId ? '' : 'disabled' }} onclick="return confirm('Kirim email sertifikat ke semua peserta yang sudah SIGNED di event ini?')">
+            <i class="fa-solid fa-envelope me-1 small"></i> Kirim Email Massal
+          </button>
+        </form>
     </div>
   </div>
 </div>
@@ -198,6 +206,7 @@
               \App\Models\Certificate::STATUS_GENERATING => 'bg-info bg-gradient',
               \App\Models\Certificate::STATUS_FINAL_GENERATED => 'bg-success',
               \App\Models\Certificate::STATUS_SIGNED => 'bg-success',
+              \App\Models\Certificate::STATUS_SENT => 'bg-info bg-gradient',
               \App\Models\Certificate::STATUS_REJECTED => 'bg-danger',
               'gagal_tte' => 'bg-danger',
               default => 'bg-secondary'
@@ -294,7 +303,6 @@
                   </button>
                 @endif
 
-                {{-- 5) Download --}}
                 @if($hasPdf)
                   <a class="btn btn-outline-primary btn-sm rounded-3"
                      href="{{ route('admin.certificates.download', $cert->id) }}"
@@ -304,6 +312,20 @@
                 @else
                   <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="PDF belum ada">
                     <i class="fa-solid fa-download"></i>
+                  </button>
+                @endif
+
+                {{-- 5.5) Send Email --}}
+                @if($hasCert && in_array($statusVal, [\App\Models\Certificate::STATUS_SIGNED, \App\Models\Certificate::STATUS_SENT]) && $p->email)
+                  <form method="POST" action="{{ route('admin.certificates.sendEmailOne', $cert->id) }}" class="d-inline" onsubmit="return confirm('Kirim sertifikat ke email {{ $p->email }}?')">
+                    @csrf
+                    <button class="btn btn-soft-primary btn-sm rounded-3" title="Kirim Email">
+                      <i class="fa-solid fa-envelope"></i>
+                    </button>
+                  </form>
+                @else
+                  <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="Hanya sertifikat SIGNED & punya email">
+                    <i class="fa-solid fa-envelope"></i>
                   </button>
                 @endif
                 
@@ -318,9 +340,28 @@
                 @endif
 
                 {{-- 7) Edit Participant (untuk fix data) --}}
-                <a href="{{ route('admin.participants.edit', $p->id) }}" class="btn btn-soft-secondary btn-sm rounded-3" title="Edit Data Peserta">
-                  <i class="fa-solid fa-user-pen"></i>
-                </a>
+                @php
+                  $canEdit = true;
+                  $isFullAdmin = auth()->user()->isFullAdmin();
+                  if (!$isFullAdmin) {
+                      if ($p->event?->status === \App\Models\Event::STATUS_CLOSED) {
+                          $canEdit = false;
+                      }
+                      if ($hasCert && in_array(strtolower($statusVal), [\App\Models\Certificate::STATUS_SIGNED, \App\Models\Certificate::STATUS_SENT])) {
+                          $canEdit = false;
+                      }
+                  }
+                @endphp
+
+                @if($canEdit)
+                  <a href="{{ route('admin.participants.edit', $p->id) }}" class="btn btn-soft-secondary btn-sm rounded-3" title="Edit Data Peserta">
+                    <i class="fa-solid fa-user-pen"></i>
+                  </a>
+                @else
+                  <button class="btn btn-outline-secondary btn-sm rounded-3" disabled title="Terkunci (Sertifikat TTE atau Event Ditutup)">
+                    <i class="fa-solid fa-lock"></i>
+                  </button>
+                @endif
 
               </div>
             </td>
