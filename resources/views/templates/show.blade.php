@@ -5,11 +5,11 @@
 @section('content')
 @php
   // URL background (public storage)
-  $bgUrl = $template->file_path ? asset('storage/'.$template->file_path) : null;
+  $bgUrl = $template->background_path ? asset('storage/'.$template->background_path) : null;
 
   // Tentukan extension untuk preview
-  $ext = $template->file_path
-      ? strtolower(pathinfo($template->file_path, PATHINFO_EXTENSION))
+  $ext = $template->background_path
+      ? strtolower(pathinfo($template->background_path, PATHINFO_EXTENSION))
       : null;
 
   // Settings aman: bisa string JSON atau array
@@ -88,14 +88,14 @@
 
                         <div class="mb-0">
                             <label class="text-muted small fw-bold text-uppercase ls-1 d-block mb-2">File Background</label>
-                            @if($template->file_path)
+                            @if($template->background_path)
                                 <div class="p-3 border rounded-4 bg-white shadow-sm">
                                     <div class="d-flex align-items-center mb-3">
                                         <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-2 me-3">
                                             <i class="fa-solid fa-file-image fs-4"></i>
                                         </div>
                                         <div class="overflow-hidden">
-                                            <div class="text-dark fw-semibold text-truncate small">{{ basename($template->file_path) }}</div>
+                                            <div class="text-dark fw-semibold text-truncate small">{{ basename($template->background_path) }}</div>
                                             <div class="text-muted x-small uppercase fw-bold ls-1">{{ strtoupper($ext) }} File</div>
                                         </div>
                                     </div>
@@ -128,7 +128,7 @@
                         </div>
                     </div>
                     <div class="card-body p-4 bg-light bg-opacity-50">
-                        @if($template->file_path)
+                        @if($template->background_path)
                             <div class="bg-white p-2 rounded-4 shadow-sm border">
                                 @if(in_array($ext, ['png','jpg','jpeg','webp']))
                                     <div class="preview-container position-relative overflow-hidden rounded-3">
