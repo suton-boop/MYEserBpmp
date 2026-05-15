@@ -11,6 +11,11 @@
   <div>
     <h4 class="mb-0">Persetujuan Sertifikat</h4>
     <div class="text-muted">Daftar sertifikat dengan status <b>SUBMITTED</b> yang menunggu persetujuan.</div>
+    <div class="mt-2">
+        <a href="{{ route('admin.system.approvals.rejected') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+            <i class="fa-solid fa-ban me-1"></i> Lihat Daftar Penolakan
+        </a>
+    </div>
   </div>
 
   <div class="d-flex gap-2 align-items-start flex-wrap">

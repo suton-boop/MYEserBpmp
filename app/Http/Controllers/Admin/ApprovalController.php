@@ -27,6 +27,22 @@ class ApprovalController extends Controller
         return view('admin.approvals.index', compact('certificates', 'events', 'eventId'));
     }
 
+    public function rejected(Request $request)
+    {
+        $eventId = $request->query('event_id');
+        $events = Event::orderBy('name')->get(['id', 'name']);
+
+        $certificates = Certificate::query()
+            ->with(['event', 'participant', 'submittedBy'])
+            ->where('status', Certificate::STATUS_REJECTED)
+            ->when($eventId, fn($q) => $q->where('event_id', $eventId))
+            ->latest('rejected_at')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.approvals.rejected', compact('certificates', 'events', 'eventId'));
+    }
+
     // POST /admin/approvals/{certificate}/approve
     public function approve(Certificate $certificate)
     {

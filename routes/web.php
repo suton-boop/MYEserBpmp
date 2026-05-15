@@ -107,6 +107,11 @@ Route::prefix('admin')
                 ->whereNumber('certificate')->name('revise');
             Route::post('/{certificate}/resubmit', [CertificateFlowController::class , 'resubmit'])
                 ->whereNumber('certificate')->name('resubmit');
+
+            // Email Sending Routes
+            Route::post('/{certificate}/send-email', [CertificateController::class, 'sendEmailOne'])
+                ->whereNumber('certificate')->name('sendEmailOne');
+            Route::post('/send-email-all', [CertificateController::class, 'sendEmailAll'])->name('sendEmailAll');
         }
         );
 
@@ -170,6 +175,7 @@ Route::prefix('admin')
 
                 Route::prefix('approvals')->name('approvals.')->group(function () {
                     Route::get('/', [ApprovalController::class , 'index'])->name('index');
+                    Route::get('/rejected', [ApprovalController::class , 'rejected'])->name('rejected');
                     Route::post('/{certificate}/approve', [ApprovalController::class , 'approve'])->whereNumber('certificate')->name('approve');
                     Route::post('/{certificate}/reject', [ApprovalController::class , 'reject'])->whereNumber('certificate')->name('reject');
                     Route::post('/approve-all', [ApprovalController::class , 'approveAll'])->name('approveAll');

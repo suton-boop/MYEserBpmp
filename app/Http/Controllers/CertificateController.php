@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Jobs\GenerateCertificatePdfJob;
+use App\Jobs\SendCertificateEmailJob;
 
 class CertificateController extends Controller
 {
@@ -412,6 +413,65 @@ class CertificateController extends Controller
         return $path;
     }
 
+    public function sendEmailOne(Certificate $certificate)
+    {
+        if ($certificate->status !== Certificate::STATUS_SIGNED && $certificate->status !== Certificate::STATUS_SENT) {
+            return back()->with('error', 'Hanya sertifikat yang sudah ditanda tangani (Signed) yang bisa dikirim.');
+        }
 
+        if (!$certificate->participant->email) {
+            return back()->with('error', 'Email peserta tidak ditemukan.');
+        }
 
+        SendCertificateEmailJob::dispatch($certificate);
+
+        return back()->with('success', 'Email sertifikat sedang dalam proses pengiriman.');
+    }
+
+    public function sendEmailAll(Request $request)
+    {
+        $data = $request->validate([
+            'event_id' => ['required', 'integer', 'exists:events,id'],
+        ]);
+
+        $eventId = (int)$data['event_id'];
+
+        $query = Certificate::where('event_id', $eventId)
+            ->whereIn('status', [Certificate::STATUS_SIGNED, Certificate::STATUS_SENT]);
+
+        $total = $query->count();
+
+        if ($total === 0) {
+            return back()->with('error', 'Tidak ada sertifikat SIGNED untuk dikirim via email.');
+        }
+
+        $limit = 50;
+        $certs = $query->limit($limit)->get();
+
+        $dispatched = 0;
+        $invalidEmails = 0;
+        foreach ($certs as $c) {
+            $email = $c->participant->email;
+            if (!$email) continue;
+            
+            // ✅ Cek validitas format email
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $invalidEmails++;
+                continue;
+            }
+            
+            SendCertificateEmailJob::dispatch($c);
+            $dispatched++;
+        }
+
+        $message = "{$dispatched} Sertifikat telah dimasukkan ke antrean pengiriman email.";
+        if ($invalidEmails > 0) {
+            $message .= " ({$invalidEmails} email dilewati karena format tidak valid).";
+        }
+        if ($total > $limit) {
+            $message .= " (Sisa " . ($total - $limit) . " data lainnya perlu diproses pada batch berikutnya).";
+        }
+
+        return back()->with('success', $message);
+    }
 }
