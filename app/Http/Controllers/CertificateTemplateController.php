@@ -94,6 +94,18 @@ class CertificateTemplateController extends Controller
         return view('templates.show', compact('template'));
     }
 
+    public function previewImage(CertificateTemplate $template)
+    {
+        if (!$template->file_path || !Storage::disk('public')->exists($template->file_path)) {
+            abort(404, 'File gambar template tidak ditemukan di server.');
+        }
+
+        $path = Storage::disk('public')->path($template->file_path);
+        
+        // Return file directly with appropriate headers
+        return response()->file($path);
+    }
+
     public function edit(CertificateTemplate $template)
     {
         return view('templates.edit', compact('template'));

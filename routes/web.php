@@ -136,6 +136,7 @@ Route::prefix('admin')
                     Route::get('/create', [CertificateTemplateController::class , 'create'])->name('create');
                     Route::post('/', [CertificateTemplateController::class , 'store'])->name('store');
                     Route::get('/{template}', [CertificateTemplateController::class , 'show'])->whereNumber('template')->name('show');
+                    Route::get('/{template}/preview', [CertificateTemplateController::class , 'previewImage'])->whereNumber('template')->name('preview');
                     Route::get('/{template}/edit', [CertificateTemplateController::class , 'edit'])->whereNumber('template')->name('edit');
                     Route::patch('/{template}', [CertificateTemplateController::class , 'update'])->whereNumber('template')->name('update');
                     Route::delete('/{template}', [CertificateTemplateController::class , 'destroy'])->whereNumber('template')->name('destroy');

@@ -4,8 +4,8 @@
 
 @section('content')
 @php
-  // URL background (public storage)
-  $bgUrl = $template->file_path ? asset('storage/'.$template->file_path) : null;
+  // Menggunakan route khusus (preview) agar aman dari isu symlink di hosting panel (Hostinger dll)
+  $bgUrl = $template->file_path ? route('admin.system.templates.preview', $template->id) : null;
 
   // Tentukan extension untuk preview
   $ext = $template->file_path
