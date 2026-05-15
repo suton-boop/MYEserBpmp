@@ -26,7 +26,43 @@
   </div>
 @endif
 
-<div class="card shadow-sm rounded-4">
+{{-- FILTER CARD --}}
+<form method="GET" action="{{ route('admin.system.templates.index') }}" class="card border-0 shadow-sm rounded-4 mb-3">
+  <div class="card-body">
+    <div class="row g-2 align-items-end">
+      <div class="col-lg-6">
+        <label class="form-label small text-muted mb-1">Cari</label>
+        <input
+          type="text"
+          name="q"
+          class="form-control"
+          value="{{ $q ?? '' }}"
+          placeholder="Cari nama template atau kode..."
+        >
+      </div>
+
+      <div class="col-lg-3">
+        <label class="form-label small text-muted mb-1">Status</label>
+        <select name="status" class="form-select">
+          <option value="">-- Semua Status --</option>
+          <option value="active" @selected(($status ?? '') === 'active')>Active</option>
+          <option value="inactive"  @selected(($status ?? '') === 'inactive')>Inactive</option>
+        </select>
+      </div>
+
+      <div class="col-lg-3 d-flex gap-2">
+        <button class="btn btn-primary w-100" title="Cari" type="submit">
+          <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
+        </button>
+        <a class="btn btn-outline-secondary" href="{{ route('admin.system.templates.index') }}" title="Reset">
+          Reset
+        </a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="card shadow-sm rounded-4 border-0">
   <div class="card-body p-0">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
