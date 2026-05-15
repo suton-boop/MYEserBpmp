@@ -115,7 +115,7 @@
 
             @if(!empty($template->file_path))
               <a class="btn btn-outline-primary btn-sm btn-icon"
-                 href="{{ asset('storage/'.$template->file_path) }}"
+                 href="{{ route('admin.system.templates.preview', $template->id) }}"
                  target="_blank" rel="noopener">
                 <i class="fa-regular fa-eye"></i> Lihat file saat ini
               </a>
@@ -135,7 +135,7 @@
           <input type="file" name="page_2_background" class="form-control mb-2">
           @if(!empty($template->page_2_background_path))
             <a class="btn btn-outline-primary btn-sm btn-icon mb-3"
-               href="{{ asset('storage/'.$template->page_2_background_path) }}"
+               href="{{ route('admin.system.templates.preview', $template->id) }}?page=2"
                target="_blank" rel="noopener">
               <i class="fa-regular fa-eye"></i> Lihat file saat ini
             </a>

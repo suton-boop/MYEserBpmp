@@ -96,11 +96,14 @@ class CertificateTemplateController extends Controller
 
     public function previewImage(CertificateTemplate $template)
     {
-        if (!$template->file_path || !Storage::disk('public')->exists($template->file_path)) {
+        $isPage2 = request()->query('page') == 2;
+        $pathField = $isPage2 ? $template->page_2_background_path : $template->file_path;
+
+        if (!$pathField || !Storage::disk('public')->exists($pathField)) {
             abort(404, 'File gambar template tidak ditemukan di server.');
         }
 
-        $path = Storage::disk('public')->path($template->file_path);
+        $path = Storage::disk('public')->path($pathField);
         
         // Return file directly with appropriate headers
         return response()->file($path);
