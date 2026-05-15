@@ -50,11 +50,16 @@ class User extends Authenticatable
         return $this->role?->name === $roleName;
     }
 
+    public function isFullAdmin(): bool
+    {
+        $adminRoles = ['superadmin', 'Super Admin', 'admin_sistem', 'Admin Sistem'];
+        return in_array($this->role?->name, $adminRoles, true);
+    }
+
     public function hasPermission(string $permissionName): bool
     {
         // 🚀 Super Admin Bypass
-        $superRoles = ['Super Admin', 'superadmin', 'admin_sistem'];
-        if (in_array($this->role?->name, $superRoles, true)) {
+        if ($this->isFullAdmin()) {
             return true;
         }
 

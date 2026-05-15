@@ -194,25 +194,38 @@
 
             <td class="text-center">
               <div class="d-flex justify-content-center gap-1">
-                <a href="{{ route('admin.participants.edit', $p->id) }}"
-                   class="btn btn-outline-warning btn-sm border-0 rounded-circle active-shadow"
-                   style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
-                   title="Edit">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </a>
+                @php
+                  $isFullAdmin = auth()->user()->isFullAdmin();
+                  $isClosed = $p->event?->status === \App\Models\Event::STATUS_CLOSED;
+                  $isSigned = ($p->cert_status ?? $p->status) === 'signed';
+                  $canModify = $isFullAdmin || (!$isClosed && !$isSigned);
+                @endphp
 
-                <form action="{{ route('admin.participants.destroy', $p->id) }}"
-                      method="POST"
-                      onsubmit="return confirm('Yakin hapus peserta ini?')"
-                      class="d-inline">
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-outline-danger btn-sm border-0 rounded-circle active-shadow"
-                          style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
-                          title="Hapus">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </form>
+                @if($canModify)
+                  <a href="{{ route('admin.participants.edit', $p->id) }}"
+                    class="btn btn-outline-warning btn-sm border-0 rounded-circle active-shadow"
+                    style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
+                    title="Edit">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+
+                  <form action="{{ route('admin.participants.destroy', $p->id) }}"
+                        method="POST"
+                        onsubmit="return confirm('Yakin hapus peserta ini?')"
+                        class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-outline-danger btn-sm border-0 rounded-circle active-shadow"
+                            style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
+                            title="Hapus">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                @else
+                  <span class="badge bg-light text-muted border small rounded-pill px-2 py-1">
+                    <i class="fa-solid fa-lock me-1"></i> Terkunci
+                  </span>
+                @endif
               </div>
             </td>
           </tr>

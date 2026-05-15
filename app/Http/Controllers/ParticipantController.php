@@ -99,7 +99,11 @@ class ParticipantController extends Controller
 
     public function importForm()
     {
-        $events = Event::where('status', Event::STATUS_ACTIVE)->orderBy('name')->get(['id', 'name']);
+        $query = Event::query();
+        if (!auth()->user()->isFullAdmin()) {
+            $query->where('status', Event::STATUS_ACTIVE);
+        }
+        $events = $query->orderBy('name')->get(['id', 'name']);
         return view('participants.import', compact('events'));
     }
 
@@ -109,6 +113,11 @@ class ParticipantController extends Controller
             'event_id' => 'required|exists:events,id',
             'file' => 'required|file|mimes:xls,xlsx,csv,txt|max:4096'
         ]);
+
+        $event = Event::findOrFail($request->event_id);
+        if ($event->status === Event::STATUS_CLOSED && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Event ini sudah selesai/ditutup. Peserta baru tidak bisa ditambahkan oleh Operator/Ketua GM.');
+        }
 
         $rows = Excel::toArray(new \stdClass, $request->file('file'));
 
@@ -182,13 +191,22 @@ class ParticipantController extends Controller
 
     public function create()
     {
-        $events = Event::where('status', Event::STATUS_ACTIVE)->orderBy('name')->get(['id', 'name']);
+        $query = Event::query();
+        if (!auth()->user()->isFullAdmin()) {
+            $query->where('status', Event::STATUS_ACTIVE);
+        }
+        $events = $query->orderBy('name')->get(['id', 'name']);
         $eventId = request('event_id');
         return view('participants.create', compact('events', 'eventId'));
     }
 
     public function store(Request $request)
     {
+        $event = Event::findOrFail($request->event_id);
+        if ($event->status === Event::STATUS_CLOSED && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Event ini sudah selesai/ditutup. Peserta baru tidak bisa ditambahkan oleh Operator/Ketua GM.');
+        }
+
         $validated = $request->validate([
             'event_id' => 'required|exists:events,id',
             'status' => 'required|in:draft,terbit',
@@ -225,6 +243,17 @@ class ParticipantController extends Controller
 
     public function update(Request $request, Participant $participant)
     {
+        // Cek apakah sertifikat sudah TTE (Signed)
+        $hasSignedCert = $participant->certificates()->where('status', 'signed')->exists();
+        if ($hasSignedCert && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Peserta ini sudah memiliki sertifikat bertanda tangan (TTE). Perubahan hanya bisa dilakukan oleh Admin atau Super Admin.');
+        }
+
+        // Cek apakah event sudah selesai
+        if ($participant->event->status === Event::STATUS_CLOSED && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Event ini sudah selesai/ditutup. Data peserta tidak bisa diubah oleh Operator/Ketua GM.');
+        }
+
         $validated = $request->validate([
             'event_id' => 'required|exists:events,id',
             'status' => 'required|in:draft,terbit',
@@ -255,6 +284,17 @@ class ParticipantController extends Controller
 
     public function destroy(Participant $participant)
     {
+        // Cek apakah sertifikat sudah TTE (Signed)
+        $hasSignedCert = $participant->certificates()->where('status', 'signed')->exists();
+        if ($hasSignedCert && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Peserta ini sudah memiliki sertifikat bertanda tangan (TTE). Penghapusan hanya bisa dilakukan oleh Admin atau Super Admin.');
+        }
+
+        // Cek apakah event sudah selesai
+        if ($participant->event->status === Event::STATUS_CLOSED && !auth()->user()->isFullAdmin()) {
+            return back()->with('error', 'Event ini sudah selesai/ditutup. Data peserta tidak bisa dihapus oleh Operator/Ketua GM.');
+        }
+
         $participant->delete();
         return back()->with('success', 'Data peserta berhasil dihapus.');
     }
