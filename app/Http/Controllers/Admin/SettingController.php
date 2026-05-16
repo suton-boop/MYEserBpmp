@@ -23,7 +23,19 @@ class SettingController extends Controller
         $strictTteDate = Setting::getValue('strict_tte_date', false);
         $reuseDeletedNumbers = Setting::getValue('reuse_deleted_numbers', false);
 
-        return view('admin.system.settings.index', compact('strictTteDate', 'reuseDeletedNumbers'));
+        // Cari nomor sertifikat yang belum terpakai (bolong/missing)
+        $certs = \App\Models\Certificate::whereNotNull('sequence')
+            ->pluck('sequence')
+            ->toArray();
+        $maxSequence = max($certs ?: [0]);
+        $missingSequences = [];
+        for ($i = 1; $i <= $maxSequence; $i++) {
+            if (!in_array($i, $certs)) {
+                $missingSequences[] = $i;
+            }
+        }
+
+        return view('admin.system.settings.index', compact('strictTteDate', 'reuseDeletedNumbers', 'missingSequences', 'maxSequence'));
     }
 
     public function update(Request $request)

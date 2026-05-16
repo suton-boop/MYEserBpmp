@@ -49,9 +49,32 @@
                                 Daur Ulang Nomor Urut Sertifikat
                             </label>
                         </div>
-                        <div class="form-text ms-1 mt-0" style="max-width: 600px;">
+                        <div class="form-text ms-1 mt-0 mb-3" style="max-width: 600px;">
                             Jika diaktifkan, sistem akan mencari dan menggunakan kembali nomor urut sertifikat yang kosong 
                             (misalnya karena sertifikat sebelumnya dihapus akibat duplikasi). Jika dinonaktifkan, nomor urut akan selalu berlanjut dari nomor terakhir.
+                        </div>
+
+                        <!-- Cek Nomor Bolong -->
+                        <div class="ms-1 p-3 bg-light rounded border" style="max-width: 600px;">
+                            <h6 class="fw-bold mb-2"><i class="fa-solid fa-magnifying-glass-chart text-primary me-2"></i>Status Nomor Urut Sertifikat</h6>
+                            <div class="small text-muted mb-2">Total maksimum sequence saat ini: <strong>{{ $maxSequence }}</strong></div>
+                            @if(count($missingSequences) > 0)
+                                <div class="alert alert-warning py-2 px-3 mb-0 small border-warning">
+                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Terdapat <strong>{{ count($missingSequences) }}</strong> nomor urut yang kosong (belum terpakai/terhapus):
+                                    <div class="mt-2 d-flex flex-wrap gap-1">
+                                        @foreach($missingSequences as $num)
+                                            <span class="badge bg-warning text-dark">{{ $num }}</span>
+                                        @endforeach
+                                    </div>
+                                    <div class="mt-2 text-muted" style="font-size: 0.8rem;">
+                                        <em>Nomor-nomor ini otomatis akan digunakan kembali untuk sertifikat baru jika fitur "Daur Ulang" di atas aktif.</em>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-success py-2 px-3 mb-0 small border-success">
+                                    <i class="fa-solid fa-check-circle me-1"></i> Luar biasa! Tidak ada nomor urut yang bolong atau terbuang. Semua berjalan berurutan dengan sempurna.
+                                </div>
+                            @endif
                         </div>
                     </div>
 
