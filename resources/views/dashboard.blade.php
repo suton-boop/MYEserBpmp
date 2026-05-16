@@ -26,42 +26,55 @@
 
     <!-- KPI Metrics row -->
     <div class="row g-4 mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card card-soft h-100 py-3" style="border-radius: 18px; border-left: 5px solid #0d6efd;">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
                             <i class="fa-solid fa-calendar-days fs-4"></i>
                         </div>
-                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px;">Total Event</h6>
+                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.8rem;">Total Event</h6>
                     </div>
                     <h2 class="fw-bold mb-0 display-6">{{ number_format($totalEvents) }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card card-soft h-100 py-3" style="border-radius: 18px; border-left: 5px solid #198754;">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
                             <i class="fa-solid fa-users fs-4"></i>
                         </div>
-                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px;">Total Peserta</h6>
+                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.8rem;">Total Peserta</h6>
                     </div>
                     <h2 class="fw-bold mb-0 display-6">{{ number_format($totalParticipants) }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card card-soft h-100 py-3" style="border-radius: 18px; border-left: 5px solid #ffca2c;">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
                             <i class="fa-solid fa-stamp fs-4"></i>
                         </div>
-                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px;">Total Sertifikat</h6>
+                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.8rem;">Sertifikat</h6>
                     </div>
                     <h2 class="fw-bold mb-0 display-6">{{ number_format($totalCertificates) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-soft h-100 py-3" style="border-radius: 18px; border-left: 5px solid #0dcaf0;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fa-solid fa-cloud-arrow-down fs-4"></i>
+                        </div>
+                        <h6 class="text-muted fw-semibold mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.8rem;">Diunduh</h6>
+                    </div>
+                    <h2 class="fw-bold mb-0 display-6">{{ number_format($totalDownloads) }}</h2>
                 </div>
             </div>
         </div>

@@ -24,6 +24,8 @@ class DashboardController extends Controller
             ->with('event:id,name')
             ->get();
 
+        $totalDownloads = Certificate::sum('download_count');
+
         return view('dashboard', compact(
             'totalEvents',
             'totalParticipants',
@@ -32,7 +34,8 @@ class DashboardController extends Controller
             'signed',
             'pending',
             'rejected',
-            'certPerEvent'
+            'certPerEvent',
+            'totalDownloads'
         ));
     }
 }

@@ -38,6 +38,10 @@ class PublicCertificateController extends Controller
             abort(404, 'Sertifikat PDF belum tersedia.');
         }
 
+        // Catat unduhan
+        $cert->increment('download_count');
+        $cert->update(['last_downloaded_at' => now()]);
+
         $filename = 'sertifikat-' . ($cert->participant->name ?? $cert->certificate_number) . '.pdf';
         $filename = preg_replace('/[^A-Za-z0-9\-\_\.]/', '-', $filename);
 
