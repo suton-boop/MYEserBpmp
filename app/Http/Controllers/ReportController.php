@@ -26,7 +26,7 @@ class ReportController extends Controller
 
         $totalSigned = Certificate::whereHas('event', function ($q) use ($year) {
             $q->whereYear('start_date', $year)->orWhereYear('end_date', $year);
-        })->whereIn('status', ['signed', 'terbit', 'final_generated'])->count();
+        })->whereIn('status', ['signed', 'terbit', 'final_generated', 'sent'])->count();
 
         // Datatable
         $events = Event::withCount([
@@ -35,7 +35,7 @@ class ReportController extends Controller
             'certificates as cert_draft' => fn($q) => $q->where('status', 'draft'),
             'certificates as cert_submitted' => fn($q) => $q->where('status', 'submitted'),
             'certificates as cert_approved' => fn($q) => $q->where('status', 'approved'),
-            'certificates as cert_signed' => fn($q) => $q->whereIn('status', ['signed', 'terbit', 'final_generated']),
+            'certificates as cert_signed' => fn($q) => $q->whereIn('status', ['signed', 'terbit', 'final_generated', 'sent']),
         ])
             ->whereYear('start_date', $year)
             ->orWhereYear('end_date', $year)

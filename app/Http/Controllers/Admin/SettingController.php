@@ -37,7 +37,7 @@ class SettingController extends Controller
 
         // Cari sertifikat yang memiliki status anomali (selisih di dashboard)
         $anomalyCerts = \App\Models\Certificate::with(['participant', 'event'])
-            ->whereNotIn('status', ['draft', 'submitted', 'approved', 'signed', 'terbit', 'final_generated'])
+            ->whereNotIn('status', ['draft', 'submitted', 'approved', 'signed', 'terbit', 'final_generated', 'sent'])
             ->get();
 
         return view('admin.system.settings.index', compact('strictTteDate', 'reuseDeletedNumbers', 'missingSequences', 'maxSequence', 'anomalyCerts'));

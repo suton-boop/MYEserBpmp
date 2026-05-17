@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $totalCertificates = Certificate::count();
 
         $approved  = Certificate::where('status','approved')->count();
-        $signed    = Certificate::where('status','signed')->count();
+        $signed    = Certificate::whereIn('status',['signed', 'terbit', 'final_generated', 'sent'])->count();
         $pending   = Certificate::where('status','pending')->count();
         $rejected  = Certificate::where('status','rejected')->count();
 
