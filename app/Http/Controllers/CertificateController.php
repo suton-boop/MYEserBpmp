@@ -28,13 +28,24 @@ class CertificateController extends Controller
             ->with('event')
             ->when($eventId, fn($qq) => $qq->where('event_id', $eventId))
             ->when($q !== '', function ($qq) use ($q) {
-            $qq->where(function ($sub) use ($q) {
+                $qq->where(function ($sub) use ($q) {
                     $sub->where('name', 'like', "%{$q}%")
                         ->orWhere('email', 'like', "%{$q}%")
                         ->orWhere('nik', 'like', "%{$q}%")
                         ->orWhere('institution', 'like', "%{$q}%");
+                });
+            })
+            ->when($status !== '', function ($qq) use ($status, $eventId) {
+                if ($status === 'unassigned') {
+                    $qq->whereDoesntHave('certificates', function ($sub) use ($eventId) {
+                        if ($eventId) $sub->where('event_id', $eventId);
+                    });
+                } else {
+                    $qq->whereHas('certificates', function ($sub) use ($status, $eventId) {
+                        if ($eventId) $sub->where('event_id', $eventId);
+                        $sub->where('status', $status);
+                    });
                 }
-                );
             })
             ->when($sortBy === 'name_asc', fn($qq) => $qq->orderBy('name', 'asc'))
             ->when($sortBy === 'name_desc', fn($qq) => $qq->orderBy('name', 'desc'))
@@ -48,7 +59,6 @@ class CertificateController extends Controller
             $certMap = Certificate::query()
                 ->whereIn('participant_id', $participants->pluck('id'))
                 ->when($eventId, fn($qq) => $qq->where('event_id', $eventId))
-                ->when($status !== '', fn($qq) => $qq->where('status', $status))
                 ->get()
                 ->keyBy(fn($c) => $c->event_id . ':' . $c->participant_id);
         }
