@@ -35,7 +35,12 @@ class SettingController extends Controller
             }
         }
 
-        return view('admin.system.settings.index', compact('strictTteDate', 'reuseDeletedNumbers', 'missingSequences', 'maxSequence'));
+        // Cari sertifikat yang memiliki status anomali (selisih di dashboard)
+        $anomalyCerts = \App\Models\Certificate::with(['participant', 'event'])
+            ->whereNotIn('status', ['draft', 'submitted', 'approved', 'signed', 'terbit', 'final_generated'])
+            ->get();
+
+        return view('admin.system.settings.index', compact('strictTteDate', 'reuseDeletedNumbers', 'missingSequences', 'maxSequence', 'anomalyCerts'));
     }
 
     public function update(Request $request)
