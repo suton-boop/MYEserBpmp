@@ -50,30 +50,24 @@ class ApprovalController extends Controller
             return back()->with('error', 'Hanya status SUBMITTED yang bisa di-approve.');
         }
 
-        DB::transaction(function () use ($certificate) {
-
+        try {
             $year = (int)now()->format('Y');
 
-            $maxSeq = Certificate::where('year', $year)
-                ->lockForUpdate()
-                ->max('sequence');
-
-            $nextSeq = ((int)$maxSeq) + 1;
-
-            $prefix = 'Sertifikat/BPMPKALTIM/' . $year;
-            $no = str_pad((string)$nextSeq, 5, '0', STR_PAD_LEFT) . '/' . $prefix;
+            $numData = \App\Services\CertificateNumberGenerator::generate($year);
 
             $certificate->update([
                 'status' => Certificate::STATUS_APPROVED,
-                'year' => $year,
-                'sequence' => $nextSeq,
-                'certificate_number' => $no,
+                'year' => $numData['year'],
+                'sequence' => $numData['sequence'],
+                'certificate_number' => $numData['certificate_number'],
                 'approved_at' => now(),
                 'approved_by' => auth()->id(),
             ]);
-        });
 
-        return back()->with('success', 'Sertifikat disetujui & nomor dikunci.');
+            return back()->with('success', 'Sertifikat disetujui & nomor dikunci.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal menyetujui sertifikat: ' . $e->getMessage());
+        }
     }
 
     // POST /admin/approvals/{certificate}/reject
@@ -105,8 +99,7 @@ class ApprovalController extends Controller
     {
         $eventId = $request->input('event_id'); // boleh null
 
-        DB::transaction(function () use ($eventId, $request) {
-
+        try {
             $year = (int)now()->format('Y');
 
             // Ambil semua submitted yang akan diproses (urut by submitted_at biar rapi)
@@ -115,38 +108,17 @@ class ApprovalController extends Controller
                 ->when($eventId, fn($q) => $q->where('event_id', $eventId))
                 ->orderBy('submitted_at');
 
-            $certs = $query->lockForUpdate()->get(); // lock row-row yang akan diproses
+            DB::transaction(function () use ($query, $year) {
+                $certs = $query->lockForUpdate()->get(); // lock row-row yang akan diproses
+                if ($certs->isNotEmpty()) {
+                    \App\Services\CertificateNumberGenerator::approveBatch($certs, $year, auth()->id());
+                }
+            });
 
-            if ($certs->isEmpty()) {
-                // throw supaya transaction tetap aman, tapi kita handle di luar dengan pesan
-                // (lebih sederhana: return saja)
-                return;
-            }
-
-            // Generate sequence global per tahun
-            $maxSeq = Certificate::where('year', $year)
-                ->lockForUpdate()
-                ->max('sequence');
-
-            $seq = (int)$maxSeq;
-            $prefix = 'Sertifikat/BPMPKALTIM/' . $year;
-
-            foreach ($certs as $c) {
-                $seq++;
-                $no = str_pad((string)$seq, 5, '0', STR_PAD_LEFT) . '/' . $prefix;
-
-                $c->update([
-                    'status' => Certificate::STATUS_APPROVED,
-                    'year' => $year,
-                    'sequence' => $seq,
-                    'certificate_number' => $no,
-                    'approved_at' => now(),
-                    'approved_by' => auth()->id(),
-                ]);
-            }
-        });
-
-        return back()->with('success', 'Approve All berhasil diproses.');
+            return back()->with('success', 'Approve All berhasil diproses.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal menyetujui massal: ' . $e->getMessage());
+        }
     }
 
     /**
