@@ -32,9 +32,22 @@
                                 Validasi Ketat Tanggal TTE
                             </label>
                         </div>
-                        <div class="form-text ms-1 mt-0" style="max-width: 600px;">
+                        <div class="form-text ms-1 mt-0 mb-3" style="max-width: 600px;">
                             Jika diaktifkan, sertifikat <strong>tidak akan bisa di-TTE</strong> sebelum tanggal yang tertera pada sertifikat tersebut terlewati. 
                             (Tanggal hari ini harus &ge; Tanggal jadwal sertifikat). Menonaktifkan fitur ini akan memperbolehkan sertifikat di-TTE mendahului/sebelum acara.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch fs-5 mb-1">
+                            <input class="form-check-input" type="checkbox" role="switch" id="mediumTteDate" name="medium_tte_date" value="1" {{ $mediumTteDate ? 'checked' : '' }}>
+                            <label class="form-check-label fw-semibold" for="mediumTteDate">
+                                Validasi Sedang Tanggal TTE
+                            </label>
+                        </div>
+                        <div class="form-text ms-1 mt-0" style="max-width: 600px;">
+                            Jika diaktifkan, sertifikat <strong>hanya bisa di-TTE tepat pada hari H</strong> kegiatan/jadwal sertifikat.
+                            (Tanggal hari ini harus sama dengan Tanggal jadwal sertifikat). Ketika Validasi Ketat aktif, Validasi Sedang otomatis dinonaktifkan.
                         </div>
                     </div>
                     
@@ -154,4 +167,25 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const strictSwitch = document.getElementById('strictTteDate');
+    const mediumSwitch = document.getElementById('mediumTteDate');
+
+    function handleStrictChange() {
+        if (strictSwitch.checked) {
+            mediumSwitch.checked = false;
+            mediumSwitch.disabled = true;
+        } else {
+            mediumSwitch.disabled = false;
+        }
+    }
+
+    if (strictSwitch && mediumSwitch) {
+        strictSwitch.addEventListener('change', handleStrictChange);
+        handleStrictChange(); // Inisialisasi awal saat halaman dimuat
+    }
+});
+</script>
 @endsection

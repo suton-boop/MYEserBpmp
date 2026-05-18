@@ -115,13 +115,19 @@ class SigningController extends Controller
         $isManualSchedule = !empty($validated['schedule_date']);
         $manualSchedule = $isManualSchedule ? \Carbon\Carbon::parse($validated['schedule_date']) : null;
 
-        // 1. Validasi Logika: Strict Date (Opsional)
+        // 1. Validasi Logika: Strict Date / Medium Date (Opsional)
         if (!$isManualSchedule) {
             $isStrict = \App\Models\Setting::getValue('strict_tte_date', false);
+            $isMedium = \App\Models\Setting::getValue('medium_tte_date', false);
+            
+            $nowDate = now()->startOfDay();
             if ($isStrict) {
-                $nowDate = now()->startOfDay();
                 if ($targetDate && $targetDate->startOfDay()->isAfter($nowDate)) {
                     return back()->with('error', 'Validasi ketat aktif: Sertifikat belum dapat di-TTE. Tanggal pada sertifikat ('.$targetDate->format('d/m/Y').') melebih hari ini.');
+                }
+            } elseif ($isMedium) {
+                if ($targetDate && !$targetDate->startOfDay()->equalTo($nowDate)) {
+                    return back()->with('error', 'Validasi sedang aktif: Sertifikat hanya dapat di-TTE tepat pada hari H kegiatan ('.$targetDate->format('d/m/Y').'). Hari ini bukan tanggal kegiatan.');
                 }
             }
         }
@@ -232,12 +238,19 @@ class SigningController extends Controller
             $isManualSchedule = !empty($validated['schedule_date']);
             $manualSchedule = $isManualSchedule ? \Carbon\Carbon::parse($validated['schedule_date']) : null;
 
-            // Validasi: Strict Date (Opsional)
+            // Validasi: Strict Date / Medium Date (Opsional)
             if (!$isManualSchedule) {
                 $isStrict = \App\Models\Setting::getValue('strict_tte_date', false);
+                $isMedium = \App\Models\Setting::getValue('medium_tte_date', false);
+                
+                $nowDate = now()->startOfDay();
                 if ($isStrict) {
-                    $nowDate = now()->startOfDay();
                     if ($targetDate && $targetDate->startOfDay()->isAfter($nowDate)) {
+                        $countError++;
+                        continue;
+                    }
+                } elseif ($isMedium) {
+                    if ($targetDate && !$targetDate->startOfDay()->equalTo($nowDate)) {
                         $countError++;
                         continue;
                     }
