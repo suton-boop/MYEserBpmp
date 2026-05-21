@@ -31,7 +31,7 @@ class EmailController extends Controller
             $query->where('status', $request->status);
         }
 
-        $certificates = $query->orderBy('created_at', 'desc')->paginate(15);
+        $certificates = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         $events = Event::orderBy('name')->get();
 
         return view('emails.index', compact('certificates', 'events'));
