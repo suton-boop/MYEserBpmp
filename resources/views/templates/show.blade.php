@@ -5,7 +5,7 @@
 @section('content')
 @php
   // Menggunakan route khusus (preview) agar aman dari isu symlink di hosting panel (Hostinger dll)
-  $bgUrl = $template->file_path ? route('admin.system.templates.preview', $template->id) : null;
+  $bgUrl = $template->file_path ? route('admin.system.templates.preview', $template->id) . '?v=' . ($template->updated_at?->timestamp ?? time()) : null;
 
   // Tentukan extension untuk preview
   $ext = $template->file_path
@@ -120,7 +120,7 @@
                             <label class="text-muted small fw-bold text-uppercase ls-1 d-block mb-2">Background Halaman 2</label>
                             @if($template->page_2_background_path)
                                 @php
-                                    $bg2Url = route('admin.system.templates.preview', $template->id) . '?page=2';
+                                    $bg2Url = route('admin.system.templates.preview', $template->id) . '?page=2&v=' . ($template->updated_at?->timestamp ?? time());
                                     $ext2 = strtolower(pathinfo($template->page_2_background_path, PATHINFO_EXTENSION));
                                 @endphp
                                 <div class="p-3 border rounded-4 bg-white shadow-sm">
