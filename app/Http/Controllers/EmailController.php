@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Certificate;
+use App\Models\Event;
 
 class EmailController extends Controller
 {
@@ -22,13 +23,18 @@ class EmailController extends Controller
             });
         }
 
+        if ($request->filled('event_id')) {
+            $query->where('event_id', $request->event_id);
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         $certificates = $query->orderBy('created_at', 'desc')->paginate(15);
+        $events = Event::orderBy('name')->get();
 
-        return view('emails.index', compact('certificates'));
+        return view('emails.index', compact('certificates', 'events'));
     }
 
     public function send(Request $request)

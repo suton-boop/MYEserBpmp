@@ -33,25 +33,34 @@
     <div class="card-header bg-white py-3">
         <form method="GET" action="{{ route('admin.emails.index') }}" class="row g-2 align-items-center">
             
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Cari nama / email peserta..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Cari nama / email..." value="{{ request('search') }}">
                 </div>
             </div>
 
             <div class="col-md-3">
-                <select name="status" class="form-select">
-                    <option value="">Semua Status Siap Kirim</option>
-                    <option value="signed" @selected(request('status') === 'signed')>TTE Selesai (signed)</option>
-                    <option value="terbit" @selected(request('status') === 'terbit')>Telah Terbit</option>
-                    <option value="sent" @selected(request('status') === 'sent')>Sudah Dikirim (sent)</option>
+                <select name="event_id" class="form-select">
+                    <option value="">Semua Event / Program</option>
+                    @foreach ($events as $event)
+                        <option value="{{ $event->id }}" @selected(request('event_id') == $event->id)>{{ $event->name }}</option>
+                    @endforeach
                 </select>
             </div>
 
-            <div class="col-md-4 d-flex gap-2">
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">Semua Status</option>
+                    <option value="signed" @selected(request('status') === 'signed')>TTE Selesai</option>
+                    <option value="terbit" @selected(request('status') === 'terbit')>Telah Terbit</option>
+                    <option value="sent" @selected(request('status') === 'sent')>Sudah Dikirim</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-primary px-3 text-nowrap"><i class="fa-solid fa-filter me-1"></i> Filter</button>
-                @if(request()->hasAny(['search', 'status']))
+                @if(request()->hasAny(['search', 'status', 'event_id']))
                     <a href="{{ route('admin.emails.index') }}" class="btn btn-light border text-nowrap">Reset</a>
                 @endif
             </div>
