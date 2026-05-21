@@ -329,8 +329,8 @@
                   </button>
                 @endif
                 
-                {{-- 6) Reset/Revise: hanya saat final_generated, signed, atau gagal_tte + Cek Role --}}
-                @if($hasCert && in_array(strtolower($statusVal), [\App\Models\Certificate::STATUS_FINAL_GENERATED, \App\Models\Certificate::STATUS_SIGNED, \App\Models\Certificate::STATUS_SCHEDULED, 'gagal_tte']) && in_array(strtolower(auth()->user()->role?->name ?? ''), ['admin', 'superadmin', 'super admin', 'admin_sistem']))
+                {{-- 6) Reset/Revise: hanya saat final_generated, signed, sent, atau gagal_tte + Cek Role --}}
+                @if($hasCert && in_array(strtolower($statusVal), [\App\Models\Certificate::STATUS_FINAL_GENERATED, \App\Models\Certificate::STATUS_SIGNED, \App\Models\Certificate::STATUS_SENT, \App\Models\Certificate::STATUS_SCHEDULED, 'gagal_tte']) && in_array(strtolower(auth()->user()->role?->name ?? ''), ['admin', 'superadmin', 'super admin', 'admin_sistem']))
                   <form method="POST" action="{{ route('admin.certificates.revise', $cert->id) }}" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin melakukan revisi? Sertifikat akan di-reset ke status Approved dan file PDF lama akan dihapus. Nomor sertifikat TETAP.')">
                     @csrf
                     <button class="btn btn-danger btn-sm rounded-3" title="Reset / Revisi (Nomor Tetap)">

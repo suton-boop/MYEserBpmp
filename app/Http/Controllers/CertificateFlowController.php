@@ -54,16 +54,17 @@ class CertificateFlowController extends Controller
 
     public function revise(Certificate $certificate)
     {
-        // Izinkan revisi jika sudah TTE, sudah PDF final, Gagal TTE, atau sedang Terjadwal
+        // Izinkan revisi jika sudah TTE, sudah dikirim, sudah PDF final, Gagal TTE, atau sedang Terjadwal
         $allowed = [
             Certificate::STATUS_SIGNED, 
+            Certificate::STATUS_SENT, 
             Certificate::STATUS_FINAL_GENERATED, 
             Certificate::STATUS_SCHEDULED,
             'gagal_tte'
         ];
 
         if (!in_array(strtolower($certificate->status), $allowed)) {
-            return back()->with('error', 'Hanya sertifikat yang sudah TTE, PDF Final, Scheduled, atau Gagal TTE yang bisa direvisi.');
+            return back()->with('error', 'Hanya sertifikat yang sudah TTE, Terkirim, PDF Final, Scheduled, atau Gagal TTE yang bisa direvisi.');
         }
 
         // Hapus file fisik jika ada
