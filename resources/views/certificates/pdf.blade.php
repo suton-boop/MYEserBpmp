@@ -224,7 +224,19 @@
   $numberText      = $certificate->certificate_number ? "Nomor: {$certificate->certificate_number}" : "Nomor: -";
   $nameText        = $participant?->name ?? '-';
   $eventText       = $event?->name ?? '-';
-  $nikText         = $participant?->nik ? "NISN: {$participant->nik}" : "";
+  
+  $nikText = "";
+  if ($participant?->nik) {
+      $j = strtolower($participant->jenjang ?? '');
+      if ($j === 'mahasiswa') {
+          $nikText = "NIM: {$participant->nik}";
+      } elseif ($j === 'umum') {
+          $nikText = "NIK: {$participant->nik}";
+      } else {
+          $nikText = "NISN: {$participant->nik}";
+      }
+  }
+
   $peranText       = $participant?->peran ?? "";
   $institutionText = $participant?->institution ?? "";
 
