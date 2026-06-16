@@ -5,22 +5,22 @@
   <style>
     @font-face {
       font-family: 'Great Vibes';
-      src: url('data:font/truetype;charset=utf-8;base64,{{ base64_encode(file_get_contents(public_path('fonts/GreatVibes-Regular.ttf'))) }}') format('truetype');
+      src: url('{{ str_replace('\\', '/', public_path('fonts/GreatVibes-Regular.ttf')) }}') format('truetype');
       font-weight: normal;
     }
     @font-face {
       font-family: 'Great Vibes';
-      src: url('data:font/truetype;charset=utf-8;base64,{{ base64_encode(file_get_contents(public_path('fonts/GreatVibes-Regular.ttf'))) }}') format('truetype');
+      src: url('{{ str_replace('\\', '/', public_path('fonts/GreatVibes-Regular.ttf')) }}') format('truetype');
       font-weight: bold;
     }
     @font-face {
       font-family: 'Alex Brush';
-      src: url('data:font/truetype;charset=utf-8;base64,{{ base64_encode(file_get_contents(public_path('fonts/AlexBrush-Regular.ttf'))) }}') format('truetype');
+      src: url('{{ str_replace('\\', '/', public_path('fonts/AlexBrush-Regular.ttf')) }}') format('truetype');
       font-weight: normal;
     }
     @font-face {
       font-family: 'Alex Brush';
-      src: url('data:font/truetype;charset=utf-8;base64,{{ base64_encode(file_get_contents(public_path('fonts/AlexBrush-Regular.ttf'))) }}') format('truetype');
+      src: url('{{ str_replace('\\', '/', public_path('fonts/AlexBrush-Regular.ttf')) }}') format('truetype');
       font-weight: bold;
     }
     @page { size: A4 landscape; margin: 0; }
