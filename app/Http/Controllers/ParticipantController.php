@@ -181,7 +181,30 @@ class ParticipantController extends Controller
                     
                     // Deteksi tanggal (jika header mengandung kata 'tanggal')
                     if (str_contains($cleanColName, 'tanggal')) {
-                        $metadata['detected_date'] = $val;
+                        $parsedDate = $val;
+                        if (is_numeric($val)) {
+                            try {
+                                $parsedDate = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val)->format('Y-m-d');
+                            } catch (\Exception $e) {}
+                        } elseif (!empty($val)) {
+                            try {
+                                $idMonths = ['januari' => 'january', 'februari' => 'february', 'maret' => 'march', 'mei' => 'may', 'juni' => 'june', 'juli' => 'july', 'agustus' => 'august', 'oktober' => 'october', 'nopember' => 'november', 'desember' => 'december'];
+                                $valEn = str_ireplace(array_keys($idMonths), array_values($idMonths), $val);
+                                
+                                // Coba format DD/MM/YYYY jika string mengandung '/'
+                                if (str_contains($valEn, '/')) {
+                                    try {
+                                        $parsedDate = \Carbon\Carbon::createFromFormat('d/m/Y', trim($valEn))->format('Y-m-d');
+                                    } catch (\Exception $e) {
+                                        $parsedDate = \Carbon\Carbon::parse($valEn)->format('Y-m-d');
+                                    }
+                                } else {
+                                    $parsedDate = \Carbon\Carbon::parse($valEn)->format('Y-m-d');
+                                }
+                            } catch (\Exception $e) {}
+                        }
+                        $metadata['detected_date'] = $parsedDate;
+                        $metadata[$cleanColName] = $parsedDate; // Update nilai metadata dengan format Y-m-d
                     }
                 }
             }
