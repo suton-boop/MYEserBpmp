@@ -3,6 +3,14 @@
 <head>
   <meta charset="utf-8">
   <style>
+    @font-face {
+      font-family: 'Great Vibes';
+      src: url('{{ public_path('fonts/GreatVibes-Regular.ttf') }}') format('truetype');
+    }
+    @font-face {
+      font-family: 'Alex Brush';
+      src: url('{{ public_path('fonts/AlexBrush-Regular.ttf') }}') format('truetype');
+    }
     @page { size: A4 landscape; margin: 0; }
     html, body { margin: 0; padding: 0; width: 297mm; height: 210mm; }
     body { font-family: DejaVu Sans, sans-serif; -webkit-print-color-adjust: exact; }
@@ -191,12 +199,12 @@
   // default posisi (kalau settings belum lengkap tetap tampil)
   $defaults = [
     'number'      => ['x'=>0, 'y'=>210, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'600'],
-    'name'        => ['x'=>0, 'y'=>315, 'w'=>1123, 'font'=>48, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'700'],
+    'name'        => ['x'=>0, 'y'=>315, 'w'=>1123, 'font'=>48, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'700', 'fontFamily'=>"'Great Vibes', cursive"],
     'event'       => ['x'=>0, 'y'=>410, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
     'desc'        => ['x'=>0, 'y'=>460, 'w'=>1123, 'font'=>15, 'color'=>'#111111', 'align'=>'center', 'weight'=>'400'],
     'date'        => ['x'=>0, 'y'=>567, 'w'=>1123, 'font'=>16, 'color'=>'#111111', 'align'=>'center', 'weight'=>'500'],
     'nik'         => ['x'=>0, 'y'=>345, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'600'],
-    'peran'       => ['x'=>0, 'y'=>425, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
+    'peran'       => ['x'=>0, 'y'=>425, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400', 'fontFamily'=>"'Alex Brush', cursive"],
     'institution' => ['x'=>0, 'y'=>450, 'w'=>1123, 'font'=>20, 'color'=>'#0b5fa8', 'align'=>'center', 'weight'=>'400'],
   ];
 
@@ -297,6 +305,7 @@
          color: {{ $get($fName,'color') }};
          text-align: {{ $get($fName,'align') }};
          font-weight: {{ $get($fName,'weight') }};
+         font-family: {!! $get($fName,'fontFamily', "'DejaVu Sans', sans-serif") !!};
          white-space: nowrap;
        ">
     {{ $nameText }}
@@ -347,6 +356,7 @@
            color: {{ $get($fPeran,'color') }};
            text-align: {{ $get($fPeran,'align') }};
            font-weight: {{ $get($fPeran,'weight') }};
+           font-family: {!! $get($fPeran,'fontFamily', "'DejaVu Sans', sans-serif") !!};
          ">
       {{ $peranText }}
     </div>
