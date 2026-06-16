@@ -5,11 +5,11 @@
   <style>
     @font-face {
       font-family: 'Great Vibes';
-      src: url('{{ str_replace('\\', '/', public_path('fonts/GreatVibes-Regular.ttf')) }}') format('truetype');
+      src: url('data:font/truetype;charset=utf-8;base64,{{ base64_encode(file_get_contents(public_path('fonts/GreatVibes-Regular.ttf'))) }}') format('truetype');
     }
     @font-face {
       font-family: 'Alex Brush';
-      src: url('{{ str_replace('\\', '/', public_path('fonts/AlexBrush-Regular.ttf')) }}') format('truetype');
+      src: url('data:font/truetype;charset=utf-8;base64,{{ base64_encode(file_get_contents(public_path('fonts/AlexBrush-Regular.ttf'))) }}') format('truetype');
     }
     @page { size: A4 landscape; margin: 0; }
     html, body { margin: 0; padding: 0; width: 297mm; height: 210mm; }
