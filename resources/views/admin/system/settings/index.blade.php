@@ -109,6 +109,33 @@
 
                     <hr class="text-muted opacity-25">
 
+                    <h5 class="fw-bold text-dark mb-4">Pengaturan Font Sertifikat</h5>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Font Nama Peserta</label>
+                            <select name="font_name_participant" class="form-select">
+                                <option value="'Great Vibes', cursive" {{ $fontNameParticipant == "'Great Vibes', cursive" ? 'selected' : '' }}>Great Vibes (Tegak Bersambung Halus)</option>
+                                <option value="'Alex Brush', cursive" {{ $fontNameParticipant == "'Alex Brush', cursive" ? 'selected' : '' }}>Alex Brush (Tegak Bersambung Tegas)</option>
+                                <option value="'Times-Roman', serif" {{ $fontNameParticipant == "'Times-Roman', serif" ? 'selected' : '' }}>Times New Roman (Standar Formal)</option>
+                                <option value="'Helvetica', sans-serif" {{ $fontNameParticipant == "'Helvetica', sans-serif" ? 'selected' : '' }}>Helvetica / Arial (Standar Tegak Modern)</option>
+                            </select>
+                            <div class="form-text">Pilih jenis huruf (font) yang akan digunakan untuk mencetak Nama Peserta di PDF.</div>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <label class="form-label fw-semibold">Font Peran (Sebagai)</label>
+                            <select name="font_role_participant" class="form-select">
+                                <option value="'Alex Brush', cursive" {{ $fontRoleParticipant == "'Alex Brush', cursive" ? 'selected' : '' }}>Alex Brush (Tegak Bersambung Tegas)</option>
+                                <option value="'Great Vibes', cursive" {{ $fontRoleParticipant == "'Great Vibes', cursive" ? 'selected' : '' }}>Great Vibes (Tegak Bersambung Halus)</option>
+                                <option value="'Times-Roman', serif" {{ $fontRoleParticipant == "'Times-Roman', serif" ? 'selected' : '' }}>Times New Roman (Standar Formal)</option>
+                                <option value="'Helvetica', sans-serif" {{ $fontRoleParticipant == "'Helvetica', sans-serif" ? 'selected' : '' }}>Helvetica / Arial (Standar Tegak Modern)</option>
+                            </select>
+                            <div class="form-text">Pilih jenis huruf (font) yang akan digunakan untuk mencetak Peran (misal: Peserta, Narasumber).</div>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25">
+
                     <h5 class="fw-bold text-dark mb-4 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Pengecekan Selisih Data (Anomali)</h5>
                     <div class="mb-4">
                         <div class="form-text ms-1 mt-0 mb-3" style="max-width: 800px;">

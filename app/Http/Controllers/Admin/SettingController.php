@@ -24,6 +24,9 @@ class SettingController extends Controller
         $mediumTteDate = Setting::getValue('medium_tte_date', false);
         $reuseDeletedNumbers = Setting::getValue('reuse_deleted_numbers', false);
         $allowDuplicateParticipants = Setting::getValue('allow_duplicate_participants', false);
+        
+        $fontNameParticipant = Setting::getValue('font_name_participant', "'Great Vibes', cursive");
+        $fontRoleParticipant = Setting::getValue('font_role_participant', "'Alex Brush', cursive");
 
         // Cari nomor sertifikat yang belum terpakai (bolong/missing)
         $certs = \App\Models\Certificate::whereNotNull('sequence')
@@ -42,7 +45,10 @@ class SettingController extends Controller
             ->whereNotIn('status', ['draft', 'submitted', 'approved', 'signed', 'terbit', 'final_generated', 'sent'])
             ->get();
 
-        return view('admin.system.settings.index', compact('strictTteDate', 'mediumTteDate', 'reuseDeletedNumbers', 'allowDuplicateParticipants', 'missingSequences', 'maxSequence', 'anomalyCerts'));
+        return view('admin.system.settings.index', compact(
+            'strictTteDate', 'mediumTteDate', 'reuseDeletedNumbers', 'allowDuplicateParticipants', 
+            'missingSequences', 'maxSequence', 'anomalyCerts', 'fontNameParticipant', 'fontRoleParticipant'
+        ));
     }
 
     public function update(Request $request)
@@ -55,7 +61,9 @@ class SettingController extends Controller
             'strict_tte_date' => 'nullable|boolean',
             'medium_tte_date' => 'nullable|boolean',
             'reuse_deleted_numbers' => 'nullable|boolean',
-            'allow_duplicate_participants' => 'nullable|boolean'
+            'allow_duplicate_participants' => 'nullable|boolean',
+            'font_name_participant' => 'nullable|string|max:255',
+            'font_role_participant' => 'nullable|string|max:255',
         ]);
 
         $strictVal = $request->has('strict_tte_date') ? '1' : '0';
@@ -97,6 +105,26 @@ class SettingController extends Controller
                 'type' => 'boolean'
             ]
         );
+
+        if ($request->has('font_name_participant')) {
+            Setting::updateOrCreate(
+                ['key' => 'font_name_participant'],
+                [
+                    'value' => $request->input('font_name_participant'),
+                    'type' => 'string'
+                ]
+            );
+        }
+
+        if ($request->has('font_role_participant')) {
+            Setting::updateOrCreate(
+                ['key' => 'font_role_participant'],
+                [
+                    'value' => $request->input('font_role_participant'),
+                    'type' => 'string'
+                ]
+            );
+        }
 
         return redirect()->back()->with('success', 'Pengaturan sistem berhasil diperbarui.');
     }
