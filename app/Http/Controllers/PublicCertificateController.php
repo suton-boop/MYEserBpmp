@@ -15,7 +15,7 @@ class PublicCertificateController extends Controller
         }
 
         $results = \App\Models\Certificate::with(['participant', 'event'])
-            ->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, 'terbit'])
+            ->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, 'terbit', \App\Models\Certificate::STATUS_FINAL_GENERATED, \App\Models\Certificate::STATUS_SENT])
             ->whereHas('participant', function ($q) use ($keyword) {
             $q->where('name', 'like', "%{$keyword}%")
                 ->orWhere('nik', 'like', "%{$keyword}%")
@@ -63,7 +63,7 @@ class PublicCertificateController extends Controller
 
         $cert = \App\Models\Certificate::with(['participant', 'event'])
             ->where('certificate_number', $certNo)
-            ->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, 'terbit', \App\Models\Certificate::STATUS_FINAL_GENERATED])
+            ->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, 'terbit', \App\Models\Certificate::STATUS_FINAL_GENERATED, \App\Models\Certificate::STATUS_SENT])
             ->first();
 
         // Pass status = valid or invalid ke view
@@ -79,7 +79,7 @@ class PublicCertificateController extends Controller
     {
         $cert = \App\Models\Certificate::with(['participant', 'event', 'digitalSignature.signerCertificate'])
             ->where('verify_token', $code)
-            ->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, 'terbit', \App\Models\Certificate::STATUS_FINAL_GENERATED])
+            ->whereIn('status', [\App\Models\Certificate::STATUS_SIGNED, 'terbit', \App\Models\Certificate::STATUS_FINAL_GENERATED, \App\Models\Certificate::STATUS_SENT])
             ->first();
 
         if ($cert) {
