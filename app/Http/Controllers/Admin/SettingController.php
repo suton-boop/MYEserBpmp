@@ -23,6 +23,7 @@ class SettingController extends Controller
         $strictTteDate = Setting::getValue('strict_tte_date', false);
         $mediumTteDate = Setting::getValue('medium_tte_date', false);
         $reuseDeletedNumbers = Setting::getValue('reuse_deleted_numbers', false);
+        $allowDuplicateParticipants = Setting::getValue('allow_duplicate_participants', false);
 
         // Cari nomor sertifikat yang belum terpakai (bolong/missing)
         $certs = \App\Models\Certificate::whereNotNull('sequence')
@@ -41,7 +42,7 @@ class SettingController extends Controller
             ->whereNotIn('status', ['draft', 'submitted', 'approved', 'signed', 'terbit', 'final_generated', 'sent'])
             ->get();
 
-        return view('admin.system.settings.index', compact('strictTteDate', 'mediumTteDate', 'reuseDeletedNumbers', 'missingSequences', 'maxSequence', 'anomalyCerts'));
+        return view('admin.system.settings.index', compact('strictTteDate', 'mediumTteDate', 'reuseDeletedNumbers', 'allowDuplicateParticipants', 'missingSequences', 'maxSequence', 'anomalyCerts'));
     }
 
     public function update(Request $request)
@@ -53,7 +54,8 @@ class SettingController extends Controller
         $request->validate([
             'strict_tte_date' => 'nullable|boolean',
             'medium_tte_date' => 'nullable|boolean',
-            'reuse_deleted_numbers' => 'nullable|boolean'
+            'reuse_deleted_numbers' => 'nullable|boolean',
+            'allow_duplicate_participants' => 'nullable|boolean'
         ]);
 
         $strictVal = $request->has('strict_tte_date') ? '1' : '0';
@@ -84,6 +86,14 @@ class SettingController extends Controller
             ['key' => 'reuse_deleted_numbers'],
             [
                 'value' => $request->has('reuse_deleted_numbers') ? '1' : '0',
+                'type' => 'boolean'
+            ]
+        );
+
+        Setting::updateOrCreate(
+            ['key' => 'allow_duplicate_participants'],
+            [
+                'value' => $request->has('allow_duplicate_participants') ? '1' : '0',
                 'type' => 'boolean'
             ]
         );

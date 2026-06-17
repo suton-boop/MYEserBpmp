@@ -154,21 +154,25 @@ class ParticipantController extends Controller
                 continue;
 
             // ✅ CEK DUPLIKAT (Cerdas: NIK Utama, atau Nama+Email jika NIK kosong)
-            $isDuplicate = Participant::where('event_id', $request->event_id)
-                ->where(function ($q) use ($nik, $email, $name) {
-                    if ($nik) {
-                        // Jika ada NIK, maka NIK harus unik di event tersebut
-                        $q->where('nik', $nik);
-                    } elseif ($email && $name) {
-                        // Jika NIK kosong, maka kombinasi Nama + Email harus unik
-                        $q->where('name', $name)->where('email', $email);
-                    }
-                })
-                ->exists();
+            $allowDuplicate = \App\Models\Setting::getValue('allow_duplicate_participants', false);
+            
+            if (!$allowDuplicate) {
+                $isDuplicate = Participant::where('event_id', $request->event_id)
+                    ->where(function ($q) use ($nik, $email, $name) {
+                        if ($nik) {
+                            // Jika ada NIK, maka NIK harus unik di event tersebut
+                            $q->where('nik', $nik);
+                        } elseif ($email && $name) {
+                            // Jika NIK kosong, maka kombinasi Nama + Email harus unik
+                            $q->where('name', $name)->where('email', $email);
+                        }
+                    })
+                    ->exists();
 
-            if ($isDuplicate) {
-                $skipped++;
-                continue;
+                if ($isDuplicate) {
+                    $skipped++;
+                    continue;
+                }
             }
 
             // Proses ekstra kolom sebagai metadata (nilai, nilai praktek, dsb)
@@ -277,20 +281,24 @@ class ParticipantController extends Controller
         }
 
         // ✅ CEK DUPLIKAT MANUAL (Cerdas: NIK Utama, atau Nama+Email jika NIK kosong)
-        $isDuplicate = Participant::where('event_id', $validated['event_id'])
-            ->where(function ($q) use ($validated) {
-                if (!empty($validated['nik'])) {
-                    $q->where('nik', $validated['nik']);
-                }
-                elseif (!empty($validated['email']) && !empty($validated['name'])) {
-                    $q->where('name', $validated['name'])
-                        ->where('email', $validated['email']);
-                }
-            })
-            ->exists();
+        $allowDuplicate = \App\Models\Setting::getValue('allow_duplicate_participants', false);
+        
+        if (!$allowDuplicate) {
+            $isDuplicate = Participant::where('event_id', $validated['event_id'])
+                ->where(function ($q) use ($validated) {
+                    if (!empty($validated['nik'])) {
+                        $q->where('nik', $validated['nik']);
+                    }
+                    elseif (!empty($validated['email']) && !empty($validated['name'])) {
+                        $q->where('name', $validated['name'])
+                            ->where('email', $validated['email']);
+                    }
+                })
+                ->exists();
 
-        if ($isDuplicate) {
-            return back()->withInput()->with('error', 'Peserta dengan NIK atau Email tersebut sudah terdaftar di event ini.');
+            if ($isDuplicate) {
+                return back()->withInput()->with('error', 'Peserta dengan NIK atau Email tersebut sudah terdaftar di event ini.');
+            }
         }
 
         Participant::create($validated);

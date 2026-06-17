@@ -93,6 +93,22 @@
 
                     <hr class="text-muted opacity-25">
 
+                    <h5 class="fw-bold text-dark mb-4">Pengaturan Impor & Penambahan Peserta</h5>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch fs-5 mb-1">
+                            <input class="form-check-input" type="checkbox" role="switch" id="allowDuplicateParticipants" name="allow_duplicate_participants" value="1" {{ $allowDuplicateParticipants ? 'checked' : '' }}>
+                            <label class="form-check-label fw-semibold" for="allowDuplicateParticipants">
+                                Izinkan Peserta Duplikat (Nama & Email Sama)
+                            </label>
+                        </div>
+                        <div class="form-text ms-1 mt-0 mb-3" style="max-width: 600px;">
+                            Jika diaktifkan, sistem akan mengizinkan penambahan atau impor peserta dengan NIK atau kombinasi Nama dan Email yang sama persis di dalam satu event yang sama (berguna jika peserta tersebut menjadi narasumber/peserta di 2 angkatan yang digabung dalam 1 event).
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25">
+
                     <h5 class="fw-bold text-dark mb-4 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Pengecekan Selisih Data (Anomali)</h5>
                     <div class="mb-4">
                         <div class="form-text ms-1 mt-0 mb-3" style="max-width: 800px;">
